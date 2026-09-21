@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+venv/
+.venv/
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+
+# Environment and local data
+.env
+.env.local
+*.db
+uploads/
+
+# Editor and operating system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
