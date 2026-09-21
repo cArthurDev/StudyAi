@@ -14,26 +14,28 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR" className="dark" suppressHydrationWarning>
+    <html lang="pt-BR" className="light" suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
             __html: `
               try {
-                const theme = localStorage.getItem('studymind-theme');
-                if (theme === 'light') {
-                  document.documentElement.classList.remove('dark');
-                  document.documentElement.classList.add('light');
-                } else {
-                  document.documentElement.classList.remove('light');
-                  document.documentElement.classList.add('dark');
+                localStorage.setItem('studymind-theme', 'light');
+                document.documentElement.classList.remove('dark');
+                document.documentElement.classList.add('light');
+                const a11y = localStorage.getItem('studymind-a11y');
+                if (a11y === 'colorblind' || a11y === 'high-contrast' || a11y === 'monochrome') {
+                  document.documentElement.setAttribute('data-a11y', a11y);
+                }
+                if (localStorage.getItem('studymind-text') === 'large') {
+                  document.documentElement.setAttribute('data-text', 'large');
                 }
               } catch (e) {}
             `,
           }}
         />
       </head>
-      <body className="bg-[#0a0d12] text-slate-100 min-h-screen antialiased selection:bg-[#FFEE8C] selection:text-stone-900">
+      <body className="bg-[#0a0d12] text-slate-100 min-h-screen antialiased selection:bg-teal-500/30 selection:text-white">
         <ThemeProvider>
           <AuthProvider>
             {children}

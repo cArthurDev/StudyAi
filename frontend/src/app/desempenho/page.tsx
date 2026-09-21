@@ -64,7 +64,7 @@ export default function DesempenhoPage() {
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
               <h1 className="text-2xl md:text-3xl font-extrabold text-slate-100 tracking-tight flex items-center gap-3">
-                <LineChart className="w-8 h-8 text-[#FFEE8C]" />
+                <LineChart className="w-8 h-8 text-teal-400" />
                 Matriz de Desempenho & Domínio
               </h1>
               <p className="text-xs md:text-sm text-slate-400 mt-1">
@@ -91,14 +91,14 @@ export default function DesempenhoPage() {
             <div
               onClick={() => setStatusFilter(statusFilter === 'EM PROGRESSO' ? '' : 'EM PROGRESSO')}
               className={`p-5 rounded-2xl bg-[#161b22] border cursor-pointer transition-all ${
-                statusFilter === 'EM PROGRESSO' ? 'border-[#FFEE8C] ring-2 ring-[#FFEE8C]/30' : 'border-slate-800 hover:border-slate-700'
+                statusFilter === 'EM PROGRESSO' ? 'border-teal-500 ring-2 ring-teal-500/30' : 'border-slate-800 hover:border-slate-700'
               }`}
             >
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold text-slate-400">EM PROGRESSO (60-79%)</span>
-                <Award className="w-5 h-5 text-[#FFEE8C]" />
+                <Award className="w-5 h-5 text-teal-400" />
               </div>
-              <div className="text-2xl font-bold font-mono text-[#FFEE8C] mt-2">{counts['EM PROGRESSO']}</div>
+              <div className="text-2xl font-bold font-mono text-teal-400 mt-2">{counts['EM PROGRESSO']}</div>
             </div>
 
             <div
@@ -131,7 +131,7 @@ export default function DesempenhoPage() {
           {/* Topics Table */}
           {loading ? (
             <div className="flex justify-center py-16">
-              <Loader2 className="w-8 h-8 animate-spin text-[#FFEE8C]" />
+              <Loader2 className="w-8 h-8 animate-spin text-teal-400" />
             </div>
           ) : filteredList.length > 0 ? (
             <div className="p-6 bg-[#161b22] border border-slate-800/80 rounded-3xl shadow-xl space-y-4">
@@ -142,7 +142,7 @@ export default function DesempenhoPage() {
                 {statusFilter && (
                   <button
                     onClick={() => setStatusFilter('')}
-                    className="text-xs text-[#FFEE8C] hover:underline"
+                    className="text-xs text-teal-400 hover:underline"
                   >
                     Limpar filtro
                   </button>
@@ -173,13 +173,13 @@ export default function DesempenhoPage() {
                       <div className="w-32 space-y-1">
                         <div className="flex justify-between text-xs font-mono font-bold">
                           <span className="text-slate-400">Domínio:</span>
-                          <span className="text-[#FFEE8C]">{m.mastery_score}%</span>
+                          <span className="text-teal-400">{m.mastery_score}%</span>
                         </div>
                         <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
                           <div
                             className={`h-full rounded-full ${
                               m.mastery_score >= 80 ? 'bg-emerald-500' :
-                              m.mastery_score >= 60 ? 'bg-[#FFEE8C]' :
+                              m.mastery_score >= 60 ? 'bg-teal-600' :
                               m.mastery_score >= 40 ? 'bg-amber-500' : 'bg-rose-500'
                             }`}
                             style={{ width: `${m.mastery_score}%` }}

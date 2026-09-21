@@ -28,9 +28,9 @@ import {
   Trash2,
   Plus,
   Sparkles,
+  AlarmClock,
   Loader2,
   CheckCircle2,
-  Zap,
   ArrowLeft
 } from 'lucide-react';
 
@@ -238,9 +238,9 @@ export default function SubjectDetailPage() {
               <div className="flex items-center gap-3">
                 <Link
                   href={`/prova-amanha?subject_id=${subject.id}`}
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white font-bold text-xs shadow-lg shadow-orange-500/20 transition-all"
+                  className="aviso-prova flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs transition-all"
                 >
-                  <Zap className="w-4 h-4 animate-pulse" />
+                  <AlarmClock className="w-4 h-4" />
                   Prova Amanhã
                 </Link>
               </div>

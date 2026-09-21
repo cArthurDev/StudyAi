@@ -19,18 +19,18 @@ export default function MateriasPage() {
   const [showModal, setShowModal] = useState(false);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [color, setColor] = useState('#FFEE8C');
+  const [color, setColor] = useState('#0D9488');
   const [creating, setCreating] = useState(false);
 
   const colors = [
-    '#FFEE8C', // Butter Yellow (Primária)
-    '#f59e0b', // Amber
-    '#eab308', // Yellow
-    '#10b981', // Emerald
-    '#06b6d4', // Cyan
-    '#3b82f6', // Blue
-    '#ef4444', // Red
-    '#84cc16', // Lime
+    '#0D9488', // Teal
+    '#2563EB', // Blue
+    '#7C3AED', // Violet
+    '#059669', // Emerald
+    '#0891B2', // Cyan
+    '#D97706', // Amber
+    '#DC2626', // Red
+    '#4F46E5', // Indigo
   ];
 
   const loadSubjects = async () => {
@@ -92,9 +92,9 @@ export default function MateriasPage() {
 
             <button
               onClick={() => setShowModal(true)}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#FFEE8C] hover:bg-[#F3DD64] text-[#221d06] font-bold text-xs shadow-lg shadow-amber-500/20 transition-all cursor-pointer"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs shadow-lg shadow-teal-500/20 transition-all cursor-pointer"
             >
-              <Plus className="w-4 h-4 text-[#221d06]" />
+              <Plus className="w-4 h-4 text-white" />
               Nova Matéria
             </button>
           </div>
@@ -102,7 +102,7 @@ export default function MateriasPage() {
           {/* Subjects Grid */}
           {loading ? (
             <div className="flex justify-center py-16">
-              <Loader2 className="w-8 h-8 animate-spin text-[#FFEE8C]" />
+              <Loader2 className="w-8 h-8 animate-spin text-teal-400" />
             </div>
           ) : subjects.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -112,7 +112,7 @@ export default function MateriasPage() {
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center p-12 text-center bg-[#161b22] border border-slate-800 rounded-3xl">
-              <div className="flex items-center justify-center w-14 h-14 mb-4 rounded-2xl bg-[#FFEE8C]/20 text-[#FFEE8C] border border-[#FFEE8C]/30">
+              <div className="flex items-center justify-center w-14 h-14 mb-4 rounded-2xl bg-teal-500/15 text-teal-400 border border-teal-500/30">
                 <BookOpen className="w-7 h-7" />
               </div>
               <h3 className="text-base font-bold text-slate-200">Nenhuma matéria criada</h3>
@@ -122,9 +122,9 @@ export default function MateriasPage() {
 
               <button
                 onClick={() => setShowModal(true)}
-                className="flex items-center gap-2 mt-5 px-5 py-2.5 rounded-xl bg-[#FFEE8C] hover:bg-[#F3DD64] text-[#221d06] font-bold text-xs shadow-lg shadow-amber-500/20 transition-all cursor-pointer"
+                className="flex items-center gap-2 mt-5 px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs shadow-lg shadow-teal-500/20 transition-all cursor-pointer"
               >
-                <Plus className="w-4 h-4 text-[#221d06]" />
+                <Plus className="w-4 h-4 text-white" />
                 Criar Primeira Matéria
               </button>
             </div>
@@ -155,7 +155,7 @@ export default function MateriasPage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Ex: Banco de Dados, Programação, História"
-                  className="w-full px-4 py-2.5 text-sm bg-slate-900 border border-slate-800 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:border-[#FFEE8C]"
+                  className="w-full px-4 py-2.5 text-sm bg-slate-900 border border-slate-800 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -166,7 +166,7 @@ export default function MateriasPage() {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Ex: Modelo Relacional, SQL, Normalização e Transações"
-                  className="w-full px-4 py-2.5 text-sm bg-slate-900 border border-slate-800 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:border-[#FFEE8C]"
+                  className="w-full px-4 py-2.5 text-sm bg-slate-900 border border-slate-800 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -199,9 +199,9 @@ export default function MateriasPage() {
                 <button
                   type="submit"
                   disabled={creating || !name.trim()}
-                  className="flex items-center gap-2 px-5 py-2 text-xs font-bold text-[#221d06] bg-[#FFEE8C] hover:bg-[#F3DD64] disabled:opacity-50 rounded-xl shadow-lg shadow-amber-500/20 cursor-pointer"
+                  className="flex items-center gap-2 px-5 py-2 text-xs font-bold text-white bg-teal-600 hover:bg-teal-500 disabled:opacity-50 rounded-xl shadow-lg shadow-teal-500/20 cursor-pointer"
                 >
-                  {creating ? <Loader2 className="w-3.5 h-3.5 animate-spin text-[#221d06]" /> : 'Criar Matéria'}
+                  {creating ? <Loader2 className="w-3.5 h-3.5 animate-spin text-white" /> : 'Criar Matéria'}
                 </button>
               </div>
             </form>

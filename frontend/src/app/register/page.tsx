@@ -33,8 +33,8 @@ export default function RegisterPage() {
       <div className="w-full max-w-md p-8 bg-[#161b22] border border-slate-800 rounded-3xl shadow-2xl">
         {/* Logo */}
         <div className="flex flex-col items-center text-center mb-8">
-          <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#EBD053] to-[#FFEE8C] shadow-xl shadow-amber-500/20 mb-3">
-            <Sparkles className="w-6 h-6 text-[#221d06]" />
+          <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-tr from-teal-700 to-teal-400 shadow-xl shadow-teal-500/20 mb-3">
+            <Sparkles className="w-6 h-6 text-white" />
           </div>
           <h1 className="text-2xl font-bold text-slate-100 tracking-tight">Criar Conta</h1>
           <p className="text-xs text-slate-400 mt-1">Comece seus estudos potencializados com IA Local</p>
@@ -58,7 +58,7 @@ export default function RegisterPage() {
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="Arthur Silva"
-                className="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-900 border border-slate-800 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:border-[#FFEE8C]"
+                className="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-900 border border-slate-800 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:border-teal-500"
               />
             </div>
           </div>
@@ -73,7 +73,7 @@ export default function RegisterPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="seu.email@exemplo.com"
-                className="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-900 border border-slate-800 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:border-[#FFEE8C]"
+                className="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-900 border border-slate-800 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:border-teal-500"
               />
             </div>
           </div>
@@ -88,7 +88,7 @@ export default function RegisterPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Mínimo 6 caracteres"
-                className="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-900 border border-slate-800 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:border-[#FFEE8C]"
+                className="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-900 border border-slate-800 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:border-teal-500"
               />
             </div>
           </div>
@@ -96,16 +96,16 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex items-center justify-center gap-2 mt-6 py-3 px-4 text-sm font-bold text-[#221d06] bg-[#FFEE8C] hover:bg-[#F3DD64] disabled:opacity-50 rounded-xl transition-all shadow-lg shadow-amber-500/20 cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 mt-6 py-3 px-4 text-sm font-bold text-white bg-teal-600 hover:bg-teal-500 disabled:opacity-50 rounded-xl transition-all shadow-lg shadow-teal-500/20 cursor-pointer"
           >
-            {loading ? <Loader2 className="w-4 h-4 animate-spin text-[#221d06]" /> : 'Cadastrar e Começar'}
-            {!loading && <ArrowRight className="w-4 h-4 text-[#221d06]" />}
+            {loading ? <Loader2 className="w-4 h-4 animate-spin text-white" /> : 'Cadastrar e Começar'}
+            {!loading && <ArrowRight className="w-4 h-4 text-white" />}
           </button>
         </form>
 
         <div className="mt-8 pt-6 border-t border-slate-800 text-center text-xs text-slate-400">
           Já possui conta?{' '}
-          <Link href="/login" className="font-semibold text-[#FFEE8C] hover:underline">
+          <Link href="/login" className="font-semibold text-teal-400 hover:underline">
             Fazer login
           </Link>
         </div>

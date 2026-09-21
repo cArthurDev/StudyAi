@@ -7,8 +7,7 @@ import { Sidebar } from '@/components/Sidebar';
 import { Navbar } from '@/components/Navbar';
 import confetti from 'canvas-confetti';
 import { 
-  Zap, Clock, AlertTriangle, ShieldCheck, CheckCircle2, 
-  Sparkles, Flame, Loader2, ArrowRight, BookOpen 
+  AlarmClock, Clock, ShieldCheck, Loader2
 } from 'lucide-react';
 
 function ProvaAmanhaContent() {
@@ -78,31 +77,26 @@ function ProvaAmanhaContent() {
         <Navbar onMenuClick={() => setSidebarOpen(true)} />
 
         <main className="flex-1 p-4 md:p-8 space-y-8 max-w-7xl mx-auto w-full">
-          {/* Hero Emergency Banner */}
-          <div className="p-6 md:p-8 rounded-3xl bg-gradient-to-r from-amber-950/50 via-orange-950/30 to-rose-950/40 border border-amber-500/30 shadow-2xl relative overflow-hidden">
+          <div className="emergency-hero p-6 md:p-8 rounded-3xl border relative overflow-hidden">
             <div className="relative z-10 space-y-2">
-              <div className="flex items-center gap-2">
-                <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 font-extrabold text-xs border border-amber-500/40 animate-pulse">
-                  <Flame className="w-3.5 h-3.5 text-orange-400" />
-                  MODO DE EMERGÊNCIA ATIVADO
-                </span>
-              </div>
+              <span className="aviso-prova inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-semibold text-xs">
+                <AlarmClock className="w-3.5 h-3.5" />
+                Aviso de prova
+              </span>
 
               <h1 className="text-2xl md:text-4xl font-extrabold text-slate-100 tracking-tight">
-                🚨 Tenho Prova Amanhã
+                Tenho Prova Amanhã
               </h1>
               <p className="text-xs md:text-sm text-slate-300 max-w-2xl leading-relaxed">
-                Algoritmo determinístico de priorização por pesos: foca onde seu domínio é mais baixo, nos assuntos mais frequentes nos materiais e mais cotados para cair na prova.
+                Prioriza onde seu domínio é mais baixo, nos assuntos mais frequentes nos materiais e mais cotados para cair na prova.
               </p>
             </div>
-
-            <div className="absolute -right-12 -bottom-12 w-64 h-64 bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
           </div>
 
           {/* Configuration Form */}
           <div className="p-6 md:p-8 bg-[#161b22] border border-slate-800/80 rounded-3xl shadow-xl space-y-6">
             <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
-              <Clock className="w-5 h-5 text-amber-400" />
+              <Clock className="w-5 h-5 text-teal-400" />
               Parâmetros do Sprint de Estudo
             </h3>
 
@@ -113,7 +107,7 @@ function ProvaAmanhaContent() {
                 <select
                   value={selectedSubjectId}
                   onChange={(e) => setSelectedSubjectId(e.target.value)}
-                  className="w-full px-4 py-2.5 text-sm bg-slate-900 border border-slate-700 rounded-xl text-slate-200 focus:outline-none focus:border-amber-500"
+                  className="w-full px-4 py-2.5 text-sm bg-slate-900 border border-slate-700 rounded-xl text-slate-200 focus:outline-none focus:border-teal-500"
                 >
                   {subjects.map((s) => (
                     <option key={s.id} value={s.id}>{s.name}</option>
@@ -134,7 +128,7 @@ function ProvaAmanhaContent() {
                       onClick={() => setHoursAvailable(h)}
                       className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all ${
                         hoursAvailable === h
-                          ? 'bg-gradient-to-tr from-amber-500 to-orange-600 text-white shadow-md'
+                          ? 'bg-teal-600 text-white shadow-md'
                           : 'bg-slate-900 text-slate-400 border border-slate-800 hover:border-slate-700'
                       }`}
                     >
@@ -149,12 +143,12 @@ function ProvaAmanhaContent() {
                 <button
                   disabled={generating || !selectedSubjectId}
                   onClick={handleGenerateCramPlan}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 text-xs font-bold text-white bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 disabled:opacity-50 rounded-xl shadow-lg shadow-orange-500/20 transition-all"
+                  className="aviso-prova w-full flex items-center justify-center gap-2 py-2.5 px-4 text-xs font-bold rounded-xl disabled:opacity-50 transition-all"
                 >
                   {generating ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
-                    <Zap className="w-4 h-4" />
+                    <AlarmClock className="w-4 h-4" />
                   )}
                   {generating ? 'Calculando Prioridades...' : 'Gerar Plano Intensivo'}
                 </button>
@@ -166,11 +160,11 @@ function ProvaAmanhaContent() {
           {cramPlan && (
             <div className="space-y-8 animate-in fade-in duration-300">
               {/* Timeline Container */}
-              <div className="p-6 md:p-8 bg-[#161b22] border border-amber-500/30 rounded-3xl shadow-2xl space-y-6">
+              <div className="p-6 md:p-8 bg-[#161b22] border border-slate-800/80 rounded-3xl shadow-xl space-y-6">
                 <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-800">
                   <div>
                     <h3 className="text-xl font-extrabold text-slate-100 flex items-center gap-2">
-                      <Zap className="w-5 h-5 text-amber-400" />
+                      <AlarmClock className="w-5 h-5 text-rose-500" />
                       {cramPlan.title}
                     </h3>
                     <p className="text-xs text-slate-400 mt-0.5">
@@ -178,8 +172,8 @@ function ProvaAmanhaContent() {
                     </p>
                   </div>
 
-                  <span className="px-3 py-1 text-xs font-mono font-bold rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/30">
-                    Cronômetro sugerido: {cramPlan.total_hours}h
+                  <span className="px-3 py-1 text-xs font-mono font-bold rounded-lg bg-teal-500/10 text-teal-400 border border-teal-500/30">
+                    Tempo sugerido: {cramPlan.total_hours}h
                   </span>
                 </div>
 
@@ -192,7 +186,7 @@ function ProvaAmanhaContent() {
                       className={`relative flex items-start gap-4 p-4 rounded-2xl border transition-all cursor-pointer ${
                         sess.is_completed
                           ? 'bg-slate-900/40 border-slate-800/60 opacity-60'
-                          : 'bg-slate-900/90 border-slate-800 hover:border-amber-500/40 shadow-lg'
+                          : 'bg-slate-900/90 border-slate-800 hover:border-teal-500/40 shadow-lg'
                       }`}
                     >
                       {/* Step Circle */}
@@ -255,7 +249,7 @@ function ProvaAmanhaContent() {
                         key={idx}
                         className="px-3 py-1 text-xs font-semibold rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
                       >
-                        ✓ {t} (Dominado)
+                        {t} (Dominado)
                       </span>
                     ))}
                   </div>

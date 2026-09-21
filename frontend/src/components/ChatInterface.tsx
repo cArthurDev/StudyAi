@@ -139,7 +139,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ subjectId, documen
       <div className="flex-1 p-4 md:p-6 overflow-y-auto space-y-6">
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center max-w-lg mx-auto py-8">
-            <div className="flex items-center justify-center w-14 h-14 mb-4 rounded-2xl bg-gradient-to-tr from-[#EBD053]/20 to-[#FFEE8C]/20 text-[#FFEE8C] border border-[#FFEE8C]/30 shadow-lg">
+            <div className="flex items-center justify-center w-14 h-14 mb-4 rounded-2xl bg-gradient-to-tr from-teal-600/20 to-teal-400/20 text-teal-400 border border-teal-500/30 shadow-lg">
               <Sparkles className="w-7 h-7" />
             </div>
             <h4 className="text-base font-bold text-slate-200">Converse com seus materiais</h4>
@@ -153,7 +153,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ subjectId, documen
                 <button
                   key={idx}
                   onClick={() => handleSendMessage(s)}
-                  className="p-3 text-xs text-slate-300 bg-slate-900/80 hover:bg-slate-800/80 border border-slate-800 hover:border-[#FFEE8C]/40 rounded-xl transition-all text-left cursor-pointer"
+                  className="p-3 text-xs text-slate-300 bg-slate-900/80 hover:bg-slate-800/80 border border-slate-800 hover:border-teal-500/40 rounded-xl transition-all text-left cursor-pointer"
                 >
                   💬 {s}
                 </button>
@@ -170,15 +170,15 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ subjectId, documen
               className={`flex gap-3.5 ${isUser ? 'justify-end' : 'justify-start'}`}
             >
               {!isUser && (
-                <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-tr from-[#EBD053] to-[#FFEE8C] text-[#221d06] shrink-0 shadow-md shadow-amber-500/20">
-                  <Bot className="w-4 h-4 text-[#221d06]" />
+                <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-tr from-teal-700 to-teal-400 text-white shrink-0 shadow-md shadow-teal-500/20">
+                  <Bot className="w-4 h-4 text-white" />
                 </div>
               )}
 
               <div
                 className={`flex flex-col max-w-[85%] sm:max-w-[75%] rounded-2xl p-4 text-sm leading-relaxed ${
                   isUser
-                    ? 'bg-[#FFEE8C] text-[#221d06] font-medium rounded-br-xs shadow-md shadow-amber-500/10'
+                    ? 'bg-teal-600 text-white font-medium rounded-br-xs shadow-md shadow-teal-500/10'
                     : 'bg-[#161b22] text-slate-200 rounded-bl-xs border border-slate-800/80 shadow-md'
                 }`}
               >
@@ -187,7 +187,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ subjectId, documen
                 {/* Verified Source Citations */}
                 {!isUser && msg.sources && msg.sources.length > 0 && (
                   <div className="mt-4 pt-3 border-t border-slate-800">
-                    <span className="text-[11px] font-semibold tracking-wider uppercase text-[#FFEE8C] block mb-2">
+                    <span className="text-[11px] font-semibold tracking-wider uppercase text-teal-400 block mb-2">
                       Fontes verificadas nos seus documentos:
                     </span>
                     <div className="flex flex-wrap gap-2">
@@ -197,9 +197,9 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ subjectId, documen
                           <button
                             key={sIdx}
                             onClick={() => setPreviewSource(s)}
-                            className="flex items-center gap-1.5 px-2.5 py-1 text-xs bg-slate-900/90 hover:bg-slate-800 border border-slate-700 hover:border-[#FFEE8C]/50 rounded-lg text-slate-300 transition-colors shadow-xs cursor-pointer"
+                            className="flex items-center gap-1.5 px-2.5 py-1 text-xs bg-slate-900/90 hover:bg-slate-800 border border-slate-700 hover:border-teal-500/50 rounded-lg text-slate-300 transition-colors shadow-xs cursor-pointer"
                           >
-                            <FileText className="w-3 h-3 text-[#FFEE8C]" />
+                            <FileText className="w-3 h-3 text-teal-400" />
                             <span className="font-medium text-slate-200">{s.document_name}</span>
                             <span className="text-slate-400">— {pageLabel}</span>
                           </button>
@@ -234,11 +234,11 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ subjectId, documen
 
         {loading && (
           <div className="flex gap-3.5 justify-start">
-            <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-tr from-[#EBD053] to-[#FFEE8C] text-[#221d06] shrink-0 animate-pulse">
-              <Bot className="w-4 h-4 text-[#221d06]" />
+            <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-tr from-teal-700 to-teal-400 text-white shrink-0 animate-pulse">
+              <Bot className="w-4 h-4 text-white" />
             </div>
             <div className="flex items-center gap-2.5 px-4 py-3 bg-[#161b22] border border-slate-800 rounded-2xl rounded-bl-xs text-xs text-slate-400">
-              <Loader2 className="w-3.5 h-3.5 animate-spin text-[#FFEE8C]" />
+              <Loader2 className="w-3.5 h-3.5 animate-spin text-teal-400" />
               <span>Consultando vetores e gerando resposta fundamentada...</span>
             </div>
           </div>
@@ -262,15 +262,15 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ subjectId, documen
             onChange={(e) => setInputPrompt(e.target.value)}
             placeholder="Pergunte sobre seus materiais de estudo..."
             disabled={loading}
-            className="flex-1 px-4 py-3 text-sm bg-slate-900 border border-slate-700/80 focus:border-[#FFEE8C] rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none transition-colors"
+            className="flex-1 px-4 py-3 text-sm bg-slate-900 border border-slate-700/80 focus:border-teal-500 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none transition-colors"
           />
 
           <button
             type="submit"
             disabled={loading || !inputPrompt.trim()}
-            className="flex items-center justify-center w-11 h-11 bg-[#FFEE8C] hover:bg-[#F3DD64] disabled:opacity-50 disabled:cursor-not-allowed text-[#221d06] font-bold rounded-xl shadow-lg shadow-amber-500/20 transition-all shrink-0 cursor-pointer"
+            className="flex items-center justify-center w-11 h-11 bg-teal-600 hover:bg-teal-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-lg shadow-teal-500/20 transition-all shrink-0 cursor-pointer"
           >
-            <Send className="w-4 h-4 text-[#221d06]" />
+            <Send className="w-4 h-4 text-white" />
           </button>
         </form>
       </div>

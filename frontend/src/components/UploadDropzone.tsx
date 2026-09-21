@@ -128,12 +128,12 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({ subjectId, onSuc
           className="hidden"
         />
 
-        <div className="flex items-center justify-center w-14 h-14 mb-4 rounded-2xl bg-[#FFEE8C]/20 text-[#FFEE8C] border border-[#FFEE8C]/30 shadow-lg shadow-amber-500/10">
+        <div className="flex items-center justify-center w-14 h-14 mb-4 rounded-2xl bg-teal-500/15 text-teal-400 border border-teal-500/30 shadow-lg shadow-teal-500/10">
           <UploadCloud className="w-7 h-7" />
         </div>
 
         <h3 className="text-base font-semibold text-slate-200 text-center">
-          Arraste seus materiais aqui ou <span className="text-[#FFEE8C] underline">procure no computador</span>
+          Arraste seus materiais aqui ou <span className="text-teal-400 underline">procure no computador</span>
         </h3>
         <p className="mt-1 text-xs text-slate-400 text-center">
           Suporte completo para PDF (PyMuPDF), PowerPoint PPTX e TXT (até 50MB)
@@ -145,7 +145,7 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({ subjectId, onSuc
             className="flex items-center justify-between w-full max-w-md mt-5 p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 shadow-md"
           >
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-[#FFEE8C]/20 text-[#FFEE8C]">
+              <div className="p-2 rounded-lg bg-teal-500/15 text-teal-400">
                 <FileText className="w-5 h-5" />
               </div>
               <div className="flex flex-col text-left">
@@ -156,9 +156,9 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({ subjectId, onSuc
 
             <button
               onClick={startUpload}
-              className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-[#221d06] bg-[#FFEE8C] rounded-lg hover:bg-[#F3DD64] transition-colors shadow-md shadow-amber-500/20 cursor-pointer"
+              className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-white bg-teal-600 rounded-lg hover:bg-teal-500 transition-colors shadow-md shadow-teal-500/20 cursor-pointer"
             >
-              <UploadCloud className="w-4 h-4 text-[#221d06]" />
+              <UploadCloud className="w-4 h-4 text-white" />
               Iniciar Processamento
             </button>
           </div>
@@ -169,15 +169,15 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({ subjectId, onSuc
           <div className="w-full max-w-md mt-6 space-y-2">
             <div className="flex items-center justify-between text-xs text-slate-300">
               <span className="flex items-center gap-2 font-medium">
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-[#FFEE8C]" />
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-teal-400" />
                 {statusMessage}
               </span>
-              <span className="text-xs font-bold font-mono text-[#FFEE8C]">{progress}%</span>
+              <span className="text-xs font-bold font-mono text-teal-400">{progress}%</span>
             </div>
 
             <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-[#EBD053] to-[#FFEE8C] transition-all duration-500 rounded-full"
+                className="h-full bg-gradient-to-r from-teal-700 to-teal-400 transition-all duration-500 rounded-full"
                 style={{ width: `${progress}%` }}
               />
             </div>

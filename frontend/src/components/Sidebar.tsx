@@ -12,9 +12,9 @@ import {
   Timer,
   CalendarDays,
   LineChart,
-  Zap,
   Settings,
-  Sparkles,
+  AlarmClock,
+  GraduationCap,
   X
 } from 'lucide-react';
 
@@ -48,53 +48,57 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       )}
 
       <aside
-        className={`fixed md:sticky top-0 left-0 z-50 flex flex-col justify-between w-64 h-screen bg-[#0d1117] border-r border-slate-800/80 transition-transform duration-300 ease-in-out md:translate-x-0 ${
+        className={`fixed md:sticky top-0 left-0 z-50 flex flex-col justify-between w-64 h-screen shrink-0 bg-[#0d1117] border-r border-slate-800/80 transition-transform duration-300 ease-in-out md:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <div className="flex flex-col flex-1 overflow-y-auto">
           {/* Brand header */}
-          <div className="flex items-center justify-between p-5 border-b border-slate-800/80">
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-[#EBD053] to-[#FFEE8C] shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform">
-                <Sparkles className="w-5 h-5 text-[#221d06]" />
+          <div className="flex items-center gap-2 px-4 py-4 border-b border-slate-800/80">
+            <Link href="/" onClick={onClose} className="flex items-center gap-3 min-w-0 flex-1 group">
+              <div className="flex items-center justify-center w-10 h-10 shrink-0 rounded-xl bg-gradient-to-tr from-teal-700 to-teal-400 shadow-md shadow-teal-500/20">
+                <GraduationCap className="w-5 h-5 text-white" />
               </div>
-              <div>
-                <h1 className="text-lg font-bold tracking-tight text-white flex items-center gap-1.5">
-                  StudyMind <span className="text-xs px-1.5 py-0.5 rounded bg-[#FFEE8C]/20 text-[#FFEE8C] border border-[#FFEE8C]/30 font-semibold">AI</span>
-                </h1>
-                <p className="text-[11px] text-slate-400 font-medium">Local AI Study Engine</p>
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <h1 className="text-base font-bold tracking-tight text-slate-100 truncate">
+                    StudyMind
+                  </h1>
+                  <span className="shrink-0 text-[10px] leading-none px-1.5 py-1 rounded-md bg-teal-500/15 text-teal-400 border border-teal-500/30 font-semibold">
+                    AI
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-400 font-medium truncate">
+                  Estudos com IA local
+                </p>
               </div>
             </Link>
             {onClose && (
               <button
                 onClick={onClose}
-                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 md:hidden"
+                type="button"
+                aria-label="Fechar menu"
+                className="p-1.5 shrink-0 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 md:hidden"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             )}
           </div>
 
-          {/* Special Cram Mode Button */}
           <div className="px-3.5 pt-4 pb-2">
             <Link
               href="/prova-amanha"
               onClick={onClose}
-              className={`relative flex items-center gap-3 px-3.5 py-3 rounded-xl font-semibold text-sm transition-all duration-200 overflow-hidden group ${
-                pathname === '/prova-amanha'
-                  ? 'bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 text-amber-300 border border-amber-500/40 shadow-lg shadow-orange-500/10'
-                  : 'bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-rose-500/10 text-amber-400 border border-amber-500/20 hover:border-amber-500/40 hover:scale-[1.02]'
+              className={`aviso-prova flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-semibold transition-all ${
+                pathname === '/prova-amanha' ? 'aviso-prova-active' : ''
               }`}
             >
-              <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-gradient-to-tr from-amber-500 to-rose-500 text-white shadow-xs">
-                <Zap className="w-4 h-4 animate-pulse" />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-xs font-extrabold tracking-wide uppercase text-amber-400">
-                  Tenho Prova Amanhã
-                </span>
-                <span className="text-[10px] text-slate-400 font-normal">Plano de choque intensivo</span>
+              <span className="aviso-prova-icon flex items-center justify-center w-8 h-8 rounded-[10px] shrink-0">
+                <AlarmClock className="w-4 h-4" />
+              </span>
+              <div className="flex flex-col min-w-0">
+                <span className="font-bold leading-tight">Tenho Prova Amanhã</span>
+                <span className="text-[11px] font-medium opacity-80">Plano intensivo</span>
               </div>
             </Link>
           </div>
@@ -111,11 +115,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                   onClick={onClose}
                   className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
                     isActive
-                      ? 'bg-[#FFEE8C]/15 text-[#FFEE8C] border border-[#FFEE8C]/30 shadow-xs'
+                      ? 'bg-teal-500/15 text-teal-400 border border-teal-500/30 shadow-xs'
                       : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
                   }`}
                 >
-                  <Icon className={`w-4 h-4 ${isActive ? 'text-[#FFEE8C]' : 'text-slate-400'}`} />
+                  <Icon className={`w-4 h-4 ${isActive ? 'text-teal-400' : 'text-slate-400'}`} />
                   <span>{item.name}</span>
                 </Link>
               );
@@ -130,7 +134,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             onClick={onClose}
             className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
               pathname === '/configuracoes'
-                ? 'bg-[#FFEE8C]/15 text-[#FFEE8C] border border-[#FFEE8C]/30'
+                ? 'bg-teal-500/15 text-teal-400 border border-teal-500/30'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
             }`}
           >
