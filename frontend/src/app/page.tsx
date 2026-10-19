@@ -95,9 +95,6 @@ export default function DashboardPage() {
         <main className="flex-1 p-5 md:p-6 space-y-5 max-w-7xl mx-auto w-full">
           <div className="study-hero flex flex-wrap items-center justify-between gap-4 p-5 md:p-6 rounded-2xl bg-gradient-to-r from-teal-950/50 via-cyan-950/20 to-slate-900/40 border border-teal-500/20 relative overflow-hidden">
             <div className="relative z-10 space-y-1">
-              <span className="inline-flex px-2.5 py-0.5 rounded-full bg-teal-500/15 text-teal-300 font-semibold text-xs border border-teal-500/30">
-                StudyMind AI
-              </span>
               <h2 className="text-2xl md:text-3xl font-extrabold text-slate-100 tracking-tight">
                 {getGreeting()}, <span className="bg-gradient-to-r from-teal-300 via-cyan-300 to-sky-300 bg-clip-text text-transparent">{user?.full_name || 'Estudante'}</span>
               </h2>

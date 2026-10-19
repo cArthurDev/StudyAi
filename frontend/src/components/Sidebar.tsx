@@ -2,6 +2,10 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
+import logoPreta from '../../images/logo_preto.png';
+import logoBranca from '../../images/logo_branca.png';
+import { useTheme } from '@/context/ThemeContext';
 import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
@@ -14,7 +18,6 @@ import {
   LineChart,
   Settings,
   AlarmClock,
-  GraduationCap,
   X
 } from 'lucide-react';
 
@@ -25,6 +28,7 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const pathname = usePathname();
+  const { isDarkMode } = useTheme();
 
   const navItems = [
     { name: 'Dashboard', href: '/', icon: LayoutDashboard },
@@ -56,18 +60,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           {/* Brand header */}
           <div className="flex items-center gap-2 px-4 py-4 border-b border-slate-800/80">
             <Link href="/" onClick={onClose} className="flex items-center gap-3 min-w-0 flex-1 group">
-              <div className="flex items-center justify-center w-10 h-10 shrink-0 rounded-xl bg-gradient-to-tr from-teal-700 to-teal-400 shadow-md shadow-teal-500/20">
-                <GraduationCap className="w-5 h-5 text-white" />
-              </div>
               <div className="min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <h1 className="text-base font-bold tracking-tight text-slate-100 truncate">
-                    StudyMind
-                  </h1>
-                  <span className="shrink-0 text-[10px] leading-none px-1.5 py-1 rounded-md bg-teal-500/15 text-teal-400 border border-teal-500/30 font-semibold">
-                    AI
-                  </span>
-                </div>
+                <Image src={isDarkMode ? logoBranca : logoPreta} alt="Study AI" className="h-auto w-44" />
                 <p className="text-[11px] text-slate-400 font-medium truncate">
                   Estudos com IA local
                 </p>
