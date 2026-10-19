@@ -4,13 +4,37 @@ import React, { useEffect, useState } from 'react';
 import { api, StudyPlan, Subject } from '@/lib/api';
 import { Sidebar } from '@/components/Sidebar';
 import { Navbar } from '@/components/Navbar';
-import { CalendarDays, Plus, CheckCircle2, Clock, Sparkles, Loader2, X } from 'lucide-react';
+import { CalendarDays, Plus, CheckCircle2, Clock, Sparkles, Loader2, X, Trash2 } from 'lucide-react';
 
 export default function PlanoEstudosPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [plans, setPlans] = useState<StudyPlan[]>([]);
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  const handleDeleteToday = async () => {
+    if (deleting) return;
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      const dashboard = await api.getDashboard();
+      const sessions = dashboard.today_sessions;
+      if (!sessions.length) {
+        setDeleteError('Não há sessões no Plano de Hoje para excluir.');
+        return;
+      }
+      if (!window.confirm(`Excluir as ${sessions.length} sessões do Plano de Hoje? As demais sessões do cronograma serão mantidas.`)) return;
+      await api.deleteStudySessions(sessions.map((session) => session.id));
+      const updatedPlans = await api.getStudyPlans();
+      setPlans(updatedPlans);
+    } catch (error) {
+      setDeleteError(error instanceof Error ? error.message : 'Não foi possível excluir. Tente novamente.');
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   // Creation modal state
   const [showModal, setShowModal] = useState(false);
@@ -95,6 +119,16 @@ export default function PlanoEstudosPage() {
               </p>
             </div>
 
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={handleDeleteToday}
+                disabled={loading || deleting || !plans.some((plan) => plan.sessions.length > 0)}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-indigo-500/30 text-indigo-400 hover:bg-indigo-500/10 font-semibold text-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                {deleting ? 'Excluindo...' : 'Excluir plano de hoje'}
+              </button>
             <button
               onClick={() => setShowModal(true)}
               className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs shadow-lg shadow-indigo-600/30 transition-all"
@@ -102,7 +136,9 @@ export default function PlanoEstudosPage() {
               <Plus className="w-4 h-4" />
               Gerar Novo Plano
             </button>
+            </div>
           </div>
+          {deleteError && <p role="alert" className="text-sm text-rose-500">{deleteError}</p>}
 
           {loading ? (
             <div className="flex justify-center py-16">
@@ -136,7 +172,7 @@ export default function PlanoEstudosPage() {
                         onClick={() => handleToggleSession(s.id)}
                         className={`flex items-center justify-between p-4 rounded-2xl border transition-all cursor-pointer ${
                           s.is_completed
-                            ? 'bg-slate-900/40 border-slate-800/60 opacity-60'
+                            ? 'study-session-completed'
                             : 'bg-slate-900/80 border-slate-800 hover:border-slate-700'
                         }`}
                       >
@@ -144,6 +180,8 @@ export default function PlanoEstudosPage() {
                           <input
                             type="checkbox"
                             checked={s.is_completed}
+                            aria-label={`Concluir sessão: ${s.title}`}
+                            onClick={(event) => event.stopPropagation()}
                             onChange={() => handleToggleSession(s.id)}
                             className="w-4 h-4 rounded text-indigo-600 bg-slate-800 border-slate-700 focus:ring-indigo-500 cursor-pointer"
                           />

@@ -21,12 +21,44 @@ import {
   Eye,
   Contrast,
   Type,
-  Blend
+  Blend,
+  Loader2,
+  Save
 } from 'lucide-react';
 import type { A11yPalette } from '@/context/ThemeContext';
 
 export default function ConfiguracoesPage() {
-  const { user } = useAuth();
+  const { user, updateProfile } = useAuth();
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [profileError, setProfileError] = useState<string | null>(null);
+  const [profileSaved, setProfileSaved] = useState(false);
+
+  useEffect(() => {
+    setFullName(user?.full_name ?? '');
+    setEmail(user?.email ?? '');
+  }, [user?.full_name, user?.email]);
+
+  const handleSaveProfile = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (savingProfile || !user) return;
+    setProfileError(null);
+    setProfileSaved(false);
+    if (!fullName.trim()) {
+      setProfileError('Informe seu nome.');
+      return;
+    }
+    setSavingProfile(true);
+    try {
+      await updateProfile({ full_name: fullName.trim(), email: email.trim() });
+      setProfileSaved(true);
+    } catch (error) {
+      setProfileError(error instanceof Error ? error.message : 'N?o foi poss?vel salvar. Tente novamente.');
+    } finally {
+      setSavingProfile(false);
+    }
+  };
   const { setTheme, isDarkMode, toggleTheme, a11yPalette, setA11yPalette, a11yText, setA11yText } = useTheme();
 
   const palettes: {
@@ -39,15 +71,17 @@ export default function ConfiguracoesPage() {
     {
       id: 'default',
       title: 'Padrão',
-      description: 'Paleta teal da plataforma',
-      swatches: ['#0d9488', '#14b8a6', '#f59e0b', '#f43f5e'],
+      description: 'Azul safira, azul claro e cobre, com superfícies neutras',
+      swatches: ['#3459a6', '#8aa9df', '#b86b43', isDarkMode ? '#171717' : '#ffffff'],
       icon: <Palette className="w-5 h-5" />,
     },
     {
       id: 'colorblind',
       title: 'Daltonismo',
-      description: 'Azul, laranja e âmbar — distinguíveis na protanopia e deuteranopia',
-      swatches: ['#0072B2', '#E69F00', '#D55E00', '#009E73'],
+      description: 'Cores adaptadas ao tema, com textos e padrões para distinguir estados',
+      swatches: isDarkMode
+        ? ['#83c9f0', '#f5c76b', '#ffb17a', '#72d7b5']
+        : ['#005a8c', '#7a4900', '#923e00', '#006b50'],
       icon: <Eye className="w-5 h-5" />,
     },
     {
@@ -127,6 +161,43 @@ export default function ConfiguracoesPage() {
               )}
             </button>
           </div>
+
+          <section aria-labelledby="profile-heading" className="p-6 md:p-8 bg-[#161b22] border border-slate-800/80 rounded-3xl shadow-xl space-y-6">
+            <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
+              <div className="p-2.5 rounded-xl bg-teal-500/15 text-teal-400 border border-teal-500/30">
+                <User className="w-6 h-6" />
+              </div>
+              <div>
+                <h2 id="profile-heading" className="text-base font-bold text-slate-100">Meu perfil</h2>
+                <p className="text-xs text-slate-400">Atualize seu nome e o e-mail usado para entrar.</p>
+              </div>
+            </div>
+            <form onSubmit={handleSaveProfile} className="space-y-4">
+              <fieldset disabled={savingProfile || !user} className="grid grid-cols-1 md:grid-cols-2 gap-4 disabled:opacity-60">
+                <div>
+                  <label htmlFor="profile-name" className="block text-xs font-semibold text-slate-300 mb-1.5">Nome completo</label>
+                  <input id="profile-name" name="name" autoComplete="name" required maxLength={255} value={fullName}
+                    onChange={(event) => { setFullName(event.target.value); setProfileSaved(false); setProfileError(null); }}
+                    className="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-teal-500" />
+                </div>
+                <div>
+                  <label htmlFor="profile-email" className="block text-xs font-semibold text-slate-300 mb-1.5">E-mail</label>
+                  <input id="profile-email" name="email" type="email" autoComplete="email" required maxLength={255} value={email}
+                    onChange={(event) => { setEmail(event.target.value); setProfileSaved(false); setProfileError(null); }}
+                    className="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-teal-500" />
+                </div>
+              </fieldset>
+              {profileError && <p role="alert" className="flex items-center gap-2 text-sm text-rose-400"><AlertCircle className="h-4 w-4 shrink-0" />{profileError}</p>}
+              {profileSaved && <p role="status" className="flex items-center gap-2 text-sm text-emerald-400"><CheckCircle2 className="h-4 w-4 shrink-0" />Perfil atualizado.</p>}
+              <div className="flex justify-end">
+                <button type="submit" disabled={savingProfile || !user || (fullName.trim() === user.full_name && email.trim() === user.email)}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                  {savingProfile ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                  {savingProfile ? 'Salvando...' : 'Salvar altera??es'}
+                </button>
+              </div>
+            </form>
+          </section>
 
           {/* Theme Selector Section */}
           <div className="p-6 md:p-8 bg-[#161b22] border border-slate-800/80 rounded-3xl shadow-xl space-y-6">
@@ -298,12 +369,12 @@ export default function ConfiguracoesPage() {
             </div>
 
             <p className="text-xs text-slate-400 leading-relaxed">
-              Daltonismo troca verde e vermelho por azul e laranja, para quem tem dificuldade em distinguir essas cores.
+              Daltonismo adapta as cores ao tema e combina textos, símbolos e padrões para distinguir os estados.
               Alto contraste reforça texto e bordas. Sem cor usa só tons de cinza. A escolha fica salva neste dispositivo.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="space-y-8">
             {/* Ollama Local AI Diagnostics */}
             <div className="p-6 md:p-8 bg-[#161b22] border border-slate-800/80 rounded-3xl shadow-xl space-y-6">
               <div className="flex items-center justify-between pb-4 border-b border-slate-800">
@@ -386,41 +457,7 @@ export default function ConfiguracoesPage() {
               </div>
             </div>
 
-            {/* Profile Info */}
-            <div className="p-6 md:p-8 bg-[#161b22] border border-slate-800/80 rounded-3xl shadow-xl space-y-6">
-              <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
-                <div className="p-2.5 rounded-xl bg-teal-500/15 text-teal-400 border border-teal-500/30">
-                  <User className="w-6 h-6" />
-                </div>
-                <div>
-                  <h2 className="text-base font-bold text-slate-100">Perfil do Estudante</h2>
-                  <p className="text-xs text-slate-400">Dados da conta local ativa</p>
-                </div>
-              </div>
 
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-400 mb-1">Nome Completo</label>
-                  <div className="p-3 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200">
-                    {user?.full_name || 'Carregando...'}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-400 mb-1">E-mail Cadastrado</label>
-                  <div className="p-3 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200">
-                    {user?.email || 'Carregando...'}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-400 mb-1">Privacidade dos Dados</label>
-                  <p className="text-xs text-slate-400 leading-relaxed p-3 bg-slate-900/60 rounded-xl border border-slate-800">
-                    🔒 Todos os seus arquivos, transcrições e embeddings são processados estritamente na sua máquina local com Ollama. Nenhuma informação é transmitida para provedores em nuvem pagos.
-                  </p>
-                </div>
-              </div>
-            </div>
           </div>
         </main>
       </div>

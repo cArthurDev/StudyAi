@@ -2,8 +2,10 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
+import logoPreta from '../../../images/logo_preto.png';
 import { useAuth } from '@/context/AuthContext';
-import { Sparkles, Lock, Mail, ArrowRight, AlertCircle, Loader2 } from 'lucide-react';
+import { Lock, Mail, ArrowRight, AlertCircle, Loader2 } from 'lucide-react';
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -32,10 +34,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md p-8 bg-[#161b22] border border-slate-800 rounded-3xl shadow-2xl">
         {/* Logo */}
         <div className="flex flex-col items-center text-center mb-8">
-          <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-tr from-teal-700 to-teal-400 shadow-xl shadow-teal-500/20 mb-3">
-            <Sparkles className="w-6 h-6 text-white" />
-          </div>
-          <h1 className="text-2xl font-bold text-slate-100 tracking-tight">StudyMind AI</h1>
+          <Image src={logoPreta} alt="Study AI" className="h-auto w-56 max-w-full mb-3" preload />
           <p className="text-xs text-slate-400 mt-1">Sua plataforma de estudos com IA Local</p>
         </div>
 

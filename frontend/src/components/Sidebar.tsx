@@ -6,6 +6,7 @@ import Image from 'next/image';
 import logoPreta from '../../images/logo_preto.png';
 import logoBranca from '../../images/logo_branca.png';
 import { useTheme } from '@/context/ThemeContext';
+import { useAuth } from '@/context/AuthContext';
 import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
@@ -18,6 +19,7 @@ import {
   LineChart,
   Settings,
   AlarmClock,
+  LogOut,
   X
 } from 'lucide-react';
 
@@ -29,6 +31,7 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const pathname = usePathname();
   const { isDarkMode } = useTheme();
+  const { logout } = useAuth();
 
   const navItems = [
     { name: 'Dashboard', href: '/', icon: LayoutDashboard },
@@ -122,7 +125,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         </div>
 
         {/* Bottom configuration */}
-        <div className="p-3.5 border-t border-slate-800/80">
+        <div className="p-3.5 border-t border-slate-800/80 space-y-1">
           <Link
             href="/configuracoes"
             onClick={onClose}
@@ -135,6 +138,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             <Settings className="w-4 h-4 text-slate-400" />
             <span>Configurações & IA</span>
           </Link>
+          <button
+            type="button"
+            onClick={() => {
+              onClose?.();
+              logout();
+            }}
+            className="flex w-full items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-teal-400 hover:bg-teal-500/10 transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500"
+          >
+            <LogOut className="w-4 h-4" aria-hidden="true" />
+            <span>Sair</span>
+          </button>
         </div>
       </aside>
     </>

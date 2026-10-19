@@ -5,9 +5,12 @@ import { api, Question, Subject } from '@/lib/api';
 import { Sidebar } from '@/components/Sidebar';
 import { Navbar } from '@/components/Navbar';
 import { QuestionPractice } from '@/components/QuestionPractice';
+import { StudyDemoBanner } from '@/components/StudyDemoBanner';
+import { demoQuestions } from '@/lib/demo-study';
 import { HelpCircle, Sparkles, Loader2, Filter } from 'lucide-react';
 
 export default function QuestoesPage() {
+  const [showDemo, setShowDemo] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [subjects, setSubjects] = useState<Subject[]>([]);
@@ -36,8 +39,10 @@ export default function QuestoesPage() {
   };
 
   useEffect(() => {
+    if (showDemo) return;
+    setLoading(true);
     loadData();
-  }, [selectedSubjectId, selectedDifficulty, selectedType]);
+  }, [selectedSubjectId, selectedDifficulty, selectedType, showDemo]);
 
   return (
     <div className="flex min-h-screen bg-[#0a0d12]">
@@ -63,6 +68,7 @@ export default function QuestoesPage() {
             <div className="flex flex-wrap items-center gap-2.5">
               <select
                 value={selectedSubjectId}
+                disabled={showDemo}
                 onChange={(e) => setSelectedSubjectId(e.target.value)}
                 className="px-3.5 py-2 text-xs bg-slate-900 border border-slate-700 rounded-xl text-slate-200"
               >
@@ -96,12 +102,18 @@ export default function QuestoesPage() {
             </div>
           </div>
 
-          {loading ? (
+          <StudyDemoBanner active={showDemo} onToggle={() => setShowDemo((current) => !current)} />
+          {showDemo ? (
+            <QuestionPractice key={`demo-${selectedDifficulty}-${selectedType}`} demo questions={demoQuestions.filter((question) =>
+              (selectedDifficulty === 'Misturado' || question.difficulty === selectedDifficulty) &&
+              (selectedType === 'misturado' || question.question_type === selectedType)
+            )} />
+          ) : loading ? (
             <div className="flex justify-center py-16">
               <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
             </div>
           ) : (
-            <QuestionPractice questions={questions} />
+            <QuestionPractice key="saved" questions={questions} />
           )}
         </main>
       </div>

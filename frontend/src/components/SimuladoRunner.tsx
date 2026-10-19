@@ -132,6 +132,11 @@ export const SimuladoRunner: React.FC<SimuladoRunnerProps> = ({ quiz: initialQui
                     </div>
                     <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
                       <div
+                        role="progressbar"
+                        aria-label={`Acertos em ${topic}`}
+                        aria-valuenow={numPct}
+                        aria-valuemin={0}
+                        aria-valuemax={100}
                         className={`h-full rounded-full ${numPct >= 70 ? 'bg-emerald-500' : numPct >= 50 ? 'bg-amber-500' : 'bg-rose-500'}`}
                         style={{ width: `${numPct}%` }}
                       />
@@ -185,6 +190,8 @@ export const SimuladoRunner: React.FC<SimuladoRunnerProps> = ({ quiz: initialQui
           return (
             <button
               key={qIdx}
+              aria-label={`Questão ${qIdx + 1}${isDone ? ', respondida' : ', não respondida'}${isCurrent ? ', atual' : ''}`}
+              aria-current={isCurrent ? 'step' : undefined}
               onClick={() => setCurrentIdx(qIdx)}
               className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${
                 isCurrent
@@ -195,6 +202,7 @@ export const SimuladoRunner: React.FC<SimuladoRunnerProps> = ({ quiz: initialQui
               }`}
             >
               {qIdx + 1}
+              {isDone && <span className="text-[9px]" aria-hidden="true"> ✓</span>}
             </button>
           );
         })}
@@ -221,6 +229,7 @@ export const SimuladoRunner: React.FC<SimuladoRunnerProps> = ({ quiz: initialQui
               return (
                 <button
                   key={optIdx}
+                  aria-pressed={isSelected}
                   onClick={() => handleSelectAnswer(currentQ.id, opt)}
                   className={`w-full flex items-start gap-3 p-3.5 rounded-xl border text-sm text-left transition-all ${
                     isSelected
@@ -232,6 +241,7 @@ export const SimuladoRunner: React.FC<SimuladoRunnerProps> = ({ quiz: initialQui
                     {String.fromCharCode(65 + optIdx)}
                   </span>
                   <span className="flex-1">{opt}</span>
+                  {isSelected && <span className="text-xs">✓ Selecionada</span>}
                 </button>
               );
             })}
@@ -243,6 +253,7 @@ export const SimuladoRunner: React.FC<SimuladoRunnerProps> = ({ quiz: initialQui
               return (
                 <button
                   key={choice}
+                  aria-pressed={isSelected}
                   onClick={() => handleSelectAnswer(currentQ.id, choice)}
                   className={`p-4 rounded-xl border text-sm font-semibold transition-all ${
                     isSelected
@@ -251,6 +262,7 @@ export const SimuladoRunner: React.FC<SimuladoRunnerProps> = ({ quiz: initialQui
                   }`}
                 >
                   {choice}
+                  {isSelected && <span className="block text-xs mt-1">✓ Selecionada</span>}
                 </button>
               );
             })}

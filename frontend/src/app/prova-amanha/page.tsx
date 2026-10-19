@@ -185,7 +185,7 @@ function ProvaAmanhaContent() {
                       onClick={() => handleToggleSession(sess.id)}
                       className={`relative flex items-start gap-4 p-4 rounded-2xl border transition-all cursor-pointer ${
                         sess.is_completed
-                          ? 'bg-slate-900/40 border-slate-800/60 opacity-60'
+                          ? 'study-session-completed'
                           : 'bg-slate-900/90 border-slate-800 hover:border-teal-500/40 shadow-lg'
                       }`}
                     >
@@ -195,7 +195,7 @@ function ProvaAmanhaContent() {
                           ? 'bg-emerald-500 text-white'
                           : 'bg-indigo-600 text-white'
                       }`}>
-                        {idx + 1}
+                        {sess.is_completed ? <span aria-label="Concluída">✓</span> : idx + 1}
                       </div>
 
                       <div className="flex-1 min-w-0">

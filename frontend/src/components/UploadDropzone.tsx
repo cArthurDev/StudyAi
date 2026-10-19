@@ -113,10 +113,10 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({ subjectId, onSuc
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onClick={() => !uploading && fileInputRef.current?.click()}
-        className={`relative flex flex-col items-center justify-center p-8 border-2 border-dashed rounded-2xl cursor-pointer transition-all ${
+        className={`upload-dropzone relative flex flex-col items-center justify-center p-8 border-2 border-dashed rounded-2xl cursor-pointer transition-colors ${
           isDragging
-            ? 'border-indigo-500 bg-indigo-500/10'
-            : 'border-slate-800 bg-[#161b22]/50 hover:bg-[#161b22] hover:border-slate-700'
+            ? 'upload-dropzone-dragging border-indigo-500 bg-white'
+            : 'border-slate-800 bg-white hover:border-slate-700'
         }`}
       >
         <input

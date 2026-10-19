@@ -177,6 +177,11 @@ export default function DesempenhoPage() {
                         </div>
                         <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
                           <div
+                            role="progressbar"
+                            aria-label={`Domínio de ${m.topic_name}`}
+                            aria-valuenow={m.mastery_score}
+                            aria-valuemin={0}
+                            aria-valuemax={100}
                             className={`h-full rounded-full ${
                               m.mastery_score >= 80 ? 'bg-emerald-500' :
                               m.mastery_score >= 60 ? 'bg-teal-600' :

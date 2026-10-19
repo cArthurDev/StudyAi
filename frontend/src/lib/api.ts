@@ -260,6 +260,7 @@ export const api = {
   register: (data: any) => apiFetch<{ access_token: string; user: User }>('/auth/register', { method: 'POST', body: JSON.stringify(data) }),
   login: (data: any) => apiFetch<{ access_token: string; user: User }>('/auth/login', { method: 'POST', body: JSON.stringify(data) }),
   getMe: () => apiFetch<User>('/auth/me'),
+  updateMe: (data: { full_name: string; email: string }) => apiFetch<User>('/auth/me', { method: 'PUT', body: JSON.stringify(data) }),
 
   // Subjects
   getSubjects: () => apiFetch<Subject[]>('/subjects/'),
@@ -314,6 +315,7 @@ export const api = {
   createWeeklyPlan: (data: any) => apiFetch<StudyPlan>('/plans/weekly', { method: 'POST', body: JSON.stringify(data) }),
   createCramPlan: (data: { subject_id: string; available_hours: number; exam_date_time?: string }) => apiFetch<StudyPlan>('/plans/cram-mode', { method: 'POST', body: JSON.stringify(data) }),
   toggleSession: (sessionId: string) => apiFetch<StudySession>(`/plans/sessions/${sessionId}/toggle`, { method: 'PATCH' }),
+  deleteStudySessions: (sessionIds: string[]) => apiFetch<{ deleted: number }>('/plans/sessions', { method: 'DELETE', body: JSON.stringify({ session_ids: sessionIds }) }),
   getExams: () => apiFetch<Exam[]>('/plans/exams'),
   createExam: (data: any) => apiFetch<Exam>('/plans/exams', { method: 'POST', body: JSON.stringify(data) }),
 

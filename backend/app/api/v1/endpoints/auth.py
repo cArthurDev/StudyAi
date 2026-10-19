@@ -1,11 +1,12 @@
 from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, func
+from sqlalchemy.exc import IntegrityError
 from app.core.database import get_db
 from app.core.security import verify_password, get_password_hash, create_access_token
 from app.models.models import User
-from app.schemas.schemas import UserCreate, UserLogin, UserResponse, Token
+from app.schemas.schemas import UserCreate, UserLogin, UserResponse, UserProfileUpdate, Token
 from app.api.deps import get_current_user
 
 router = APIRouter()
@@ -56,4 +57,27 @@ async def login(user_in: UserLogin, db: AsyncSession = Depends(get_db)):
 
 @router.get("/me", response_model=UserResponse)
 async def get_me(current_user: User = Depends(get_current_user)):
+    return current_user
+
+
+@router.put("/me", response_model=UserResponse)
+async def update_me(
+    profile: UserProfileUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    email = str(profile.email)
+    existing = await db.execute(select(User).where(
+        func.lower(User.email) == email.lower(), User.id != current_user.id
+    ))
+    if existing.scalars().first():
+        raise HTTPException(status_code=409, detail="Este e-mail já está cadastrado.")
+    current_user.full_name = profile.full_name
+    current_user.email = email
+    try:
+        await db.commit()
+    except IntegrityError:
+        await db.rollback()
+        raise HTTPException(status_code=409, detail="Este e-mail já está cadastrado.")
+    await db.refresh(current_user)
     return current_user

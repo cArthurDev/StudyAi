@@ -6,9 +6,10 @@ import { CheckCircle2, XCircle, HelpCircle, FileText, Sparkles, Send } from 'luc
 
 interface QuestionPracticeProps {
   questions: Question[];
+  demo?: boolean;
 }
 
-export const QuestionPractice: React.FC<QuestionPracticeProps> = ({ questions }) => {
+export const QuestionPractice: React.FC<QuestionPracticeProps> = ({ questions, demo = false }) => {
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, string>>({});
   const [attemptsResult, setAttemptsResult] = useState<Record<string, any>>({});
   const [submittingId, setSubmittingId] = useState<string | null>(null);
@@ -36,7 +37,11 @@ export const QuestionPractice: React.FC<QuestionPracticeProps> = ({ questions })
 
     setSubmittingId(question.id);
     try {
-      const res = await api.submitQuestionAttempt(question.id, {
+      const res = demo ? {
+        is_correct: question.question_type === 'multipla_escolha'
+          ? answer === question.correct_answer || answer.startsWith(`${question.correct_answer})`)
+          : answer === question.correct_answer,
+      } : await api.submitQuestionAttempt(question.id, {
         user_answer: answer,
         time_spent_seconds: 15
       });
@@ -106,6 +111,7 @@ export const QuestionPractice: React.FC<QuestionPracticeProps> = ({ questions })
                   return (
                     <button
                       key={optIdx}
+                      aria-pressed={isSelected}
                       disabled={isAnswered}
                       onClick={() => handleSelectOption(q.id, opt)}
                       className={`w-full flex items-start gap-3 p-3.5 rounded-xl border text-sm text-left transition-all ${buttonStyle}`}
@@ -114,6 +120,9 @@ export const QuestionPractice: React.FC<QuestionPracticeProps> = ({ questions })
                         {String.fromCharCode(65 + optIdx)}
                       </span>
                       <span className="flex-1">{opt}</span>
+                      {isCorrect && <span className="flex items-center gap-1 text-xs"><CheckCircle2 className="h-4 w-4" aria-hidden="true" />Correta</span>}
+                      {isWrongSelected && <span className="flex items-center gap-1 text-xs"><XCircle className="h-4 w-4" aria-hidden="true" />Sua resposta</span>}
+                      {isSelected && !isAnswered && <span className="text-xs">Selecionada</span>}
                     </button>
                   );
                 })}
@@ -140,11 +149,15 @@ export const QuestionPractice: React.FC<QuestionPracticeProps> = ({ questions })
                   return (
                     <button
                       key={choice}
+                      aria-pressed={isSelected}
                       disabled={isAnswered}
                       onClick={() => handleSelectOption(q.id, choice)}
                       className={`p-3.5 rounded-xl border text-sm font-semibold transition-all ${buttonStyle}`}
                     >
                       {choice}
+                      {isCorrect && <span className="block text-xs mt-1">✓ Correta</span>}
+                      {isWrongSelected && <span className="block text-xs mt-1">✕ Sua resposta</span>}
+                      {isSelected && !isAnswered && <span className="block text-xs mt-1">Selecionada</span>}
                     </button>
                   );
                 })}

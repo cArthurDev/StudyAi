@@ -254,12 +254,10 @@ export default function SubjectDetailPage() {
                 return (
                   <button
                     key={t.id}
+                    type="button"
+                    aria-pressed={isActive}
                     onClick={() => setActiveTab(t.id)}
-                    className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-xl whitespace-nowrap transition-all ${
-                      isActive
-                        ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
-                        : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-                    }`}
+                    className="subject-tab flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-xl whitespace-nowrap"
                   >
                     <Icon className="w-4 h-4" />
                     <span>{t.label}</span>

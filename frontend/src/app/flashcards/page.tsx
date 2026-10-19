@@ -5,9 +5,12 @@ import { api, Flashcard, Subject } from '@/lib/api';
 import { Sidebar } from '@/components/Sidebar';
 import { Navbar } from '@/components/Navbar';
 import { FlashcardStudy } from '@/components/FlashcardStudy';
+import { StudyDemoBanner } from '@/components/StudyDemoBanner';
+import { demoFlashcards } from '@/lib/demo-study';
 import { Layers, Sparkles, Loader2 } from 'lucide-react';
 
 export default function FlashcardsPage() {
+  const [showDemo, setShowDemo] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
   const [subjects, setSubjects] = useState<Subject[]>([]);
@@ -30,8 +33,10 @@ export default function FlashcardsPage() {
   };
 
   useEffect(() => {
+    if (showDemo) return;
+    setLoading(true);
     loadData();
-  }, [selectedSubjectId]);
+  }, [selectedSubjectId, showDemo]);
 
   return (
     <div className="flex min-h-screen bg-[#0a0d12]">
@@ -58,6 +63,7 @@ export default function FlashcardsPage() {
               <span className="text-xs text-slate-400">Filtrar baralho:</span>
               <select
                 value={selectedSubjectId}
+                disabled={showDemo}
                 onChange={(e) => setSelectedSubjectId(e.target.value)}
                 className="px-3.5 py-2 text-xs bg-slate-900 border border-slate-700 rounded-xl text-slate-200 focus:outline-none focus:border-indigo-500"
               >
@@ -69,12 +75,15 @@ export default function FlashcardsPage() {
             </div>
           </div>
 
-          {loading ? (
+          <StudyDemoBanner active={showDemo} onToggle={() => setShowDemo((current) => !current)} />
+          {showDemo ? (
+            <FlashcardStudy key="demo" flashcards={demoFlashcards} demo />
+          ) : loading ? (
             <div className="flex justify-center py-16">
               <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
             </div>
           ) : (
-            <FlashcardStudy flashcards={flashcards} onFinish={() => loadData()} />
+            <FlashcardStudy key={`saved-${selectedSubjectId}-${flashcards.map((card) => card.id).join(',')}`} flashcards={flashcards} onFinish={() => loadData()} />
           )}
         </main>
       </div>

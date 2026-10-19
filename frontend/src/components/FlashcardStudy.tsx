@@ -8,9 +8,10 @@ import { RotateCw, CheckCircle2, XCircle, Sparkles, Volume2, ArrowRight, ArrowLe
 interface FlashcardStudyProps {
   flashcards: Flashcard[];
   onFinish?: () => void;
+  demo?: boolean;
 }
 
-export const FlashcardStudy: React.FC<FlashcardStudyProps> = ({ flashcards, onFinish }) => {
+export const FlashcardStudy: React.FC<FlashcardStudyProps> = ({ flashcards, onFinish, demo = false }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [cards, setCards] = useState<Flashcard[]>(flashcards);
@@ -32,7 +33,7 @@ export const FlashcardStudy: React.FC<FlashcardStudyProps> = ({ flashcards, onFi
 
   const handleRating = async (rating: 'errei' | 'dificil' | 'bom' | 'facil') => {
     try {
-      await api.reviewFlashcard(currentCard.id, rating);
+      if (!demo) await api.reviewFlashcard(currentCard.id, rating);
     } catch {
       // Offline fallback
     }
@@ -61,7 +62,7 @@ export const FlashcardStudy: React.FC<FlashcardStudyProps> = ({ flashcards, onFi
         </div>
         <h3 className="text-lg font-bold text-slate-200">Sessão Concluída com Sucesso!</h3>
         <p className="text-xs text-slate-400 mt-1 max-w-md">
-          Você revisou todos os {cards.length} flashcards deste baralho. O algoritmo de repetição espaçada recalibrou as próximas datas de estudo.
+          {demo ? `Você testou os ${cards.length} flashcards de exemplo. Nenhum progresso foi salvo.` : `Você revisou todos os ${cards.length} flashcards deste baralho. O algoritmo de repetição espaçada recalibrou as próximas datas de estudo.`}
         </p>
 
         <button

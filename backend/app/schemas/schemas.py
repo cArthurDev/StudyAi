@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Optional, List, Dict, Any, Union
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 # --- AUTH & USER ---
 class UserBase(BaseModel):
@@ -13,6 +13,15 @@ class UserCreate(UserBase):
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
+
+class UserProfileUpdate(BaseModel):
+    email: EmailStr = Field(max_length=255)
+    full_name: str = Field(min_length=1, max_length=255)
+
+    @field_validator("full_name", mode="before")
+    @classmethod
+    def trim_name(cls, value):
+        return value.strip() if isinstance(value, str) else value
 
 class UserResponse(UserBase):
     id: str

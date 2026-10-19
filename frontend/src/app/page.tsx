@@ -14,7 +14,6 @@ import {
   TrendingUp,
   AlertTriangle,
   Calendar,
-  AlarmClock,
   Plus,
   Loader2,
 } from 'lucide-react';
@@ -25,7 +24,6 @@ export default function DashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [dashboard, setDashboard] = useState<DashboardOverview | null>(null);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     if (!authLoading && !user) {
       router.push('/login');
@@ -107,14 +105,6 @@ export default function DashboardPage() {
 
             <div className="relative z-10 flex flex-wrap gap-3">
               <Link
-                href="/prova-amanha"
-                className="aviso-prova flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm transition-all"
-              >
-                <AlarmClock className="w-4 h-4" />
-                Tenho Prova Amanhã
-              </Link>
-
-              <Link
                 href="/materias"
                 className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-sm transition-all"
               >
@@ -144,7 +134,7 @@ export default function DashboardPage() {
                   {dashboard?.total_hours_studied || 0}h
                 </div>
               </div>
-              <div className="p-2.5 rounded-xl bg-purple-500/10 text-purple-400">
+              <div className="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-400">
                 <Clock className="w-5 h-5" />
               </div>
             </div>
@@ -156,7 +146,7 @@ export default function DashboardPage() {
                   {dashboard?.total_questions_answered || 0}
                 </div>
               </div>
-              <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400">
+              <div className="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-400">
                 <CheckCircle2 className="w-5 h-5" />
               </div>
             </div>
@@ -168,7 +158,7 @@ export default function DashboardPage() {
                   {dashboard?.overall_accuracy_percentage || 0}%
                 </div>
               </div>
-              <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-400">
+              <div className="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-400">
                 <TrendingUp className="w-5 h-5" />
               </div>
             </div>
@@ -194,7 +184,7 @@ export default function DashboardPage() {
                         onClick={() => handleToggleSession(sess.id)}
                         className={`flex items-center justify-between gap-3 p-3 rounded-xl border cursor-pointer ${
                           sess.is_completed
-                            ? 'bg-slate-900/40 border-slate-800/60 opacity-60'
+                            ? 'study-session-completed'
                             : 'bg-slate-900/90 border-slate-800 hover:border-slate-700'
                         }`}
                       >
@@ -202,6 +192,8 @@ export default function DashboardPage() {
                           <input
                             type="checkbox"
                             checked={sess.is_completed}
+                            aria-label={`Concluir sessão: ${sess.title}`}
+                            onClick={(event) => event.stopPropagation()}
                             onChange={() => handleToggleSession(sess.id)}
                             className="w-4 h-4 shrink-0 rounded text-indigo-600 bg-slate-800 border-slate-700 cursor-pointer"
                           />
@@ -276,6 +268,11 @@ export default function DashboardPage() {
                         </div>
                         <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
                           <div
+                            role="progressbar"
+                            aria-label={`Domínio de ${t.topic_name}`}
+                            aria-valuenow={t.mastery_score}
+                            aria-valuemin={0}
+                            aria-valuemax={100}
                             className={`h-full rounded-full ${t.mastery_score < 40 ? 'bg-rose-500' : 'bg-amber-500'}`}
                             style={{ width: `${t.mastery_score}%` }}
                           />

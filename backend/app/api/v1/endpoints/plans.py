@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Body, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_
 from app.core.database import get_db
@@ -13,6 +13,37 @@ from app.api.deps import get_current_user
 from app.services.study_generator_service import study_generator_service
 
 router = APIRouter()
+
+
+@router.delete("/sessions")
+async def delete_study_sessions(
+    session_ids: List[str] = Body(..., embed=True),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    ids = set(session_ids)
+    if not ids:
+        raise HTTPException(status_code=400, detail="Selecione as sessões para excluir.")
+    result = await db.execute(select(StudySession).where(
+        StudySession.id.in_(ids), StudySession.user_id == current_user.id
+    ))
+    sessions = result.scalars().all()
+    if len(sessions) != len(ids):
+        raise HTTPException(status_code=404, detail="Sessão não encontrada.")
+    plan_ids = {session.study_plan_id for session in sessions}
+    for session in sessions:
+        await db.delete(session)
+    await db.flush()
+    for plan_id in plan_ids:
+        plan = await db.get(StudyPlan, plan_id)
+        remaining = await db.execute(select(StudySession).where(
+            StudySession.study_plan_id == plan_id
+        ))
+        if plan:
+            plan.total_hours = round(sum(s.duration_minutes for s in remaining.scalars().all()) / 60, 2)
+    await db.commit()
+    return {"deleted": len(sessions)}
+
 
 @router.get("/", response_model=List[StudyPlanResponse])
 async def list_study_plans(
