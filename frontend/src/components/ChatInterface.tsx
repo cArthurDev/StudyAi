@@ -21,16 +21,38 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ subjectId, documen
   const [loading, setLoading] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [previewSource, setPreviewSource] = useState<ChatSource | null>(null);
+  const [suggestionGroup, setSuggestionGroup] = useState<string | null>(null);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const starterSuggestions = [
-    "Resuma essa matéria com os pontos principais",
-    "O que é mais importante para prova?",
-    "Explique de forma simples com analogias",
-    "Crie questões sobre este assunto",
-    "O que provavelmente cairia em uma prova?",
-    "Me explique como se eu tivesse 12 anos"
+  const suggestionGroups = [
+    {
+      id: 'entender',
+      label: 'Entender',
+      hint: 'Resumo e explicação simples',
+      prompts: [
+        'Resuma essa matéria com os pontos principais',
+        'Explique de forma simples com analogias',
+        'Me explique como se eu tivesse 12 anos',
+      ],
+    },
+    {
+      id: 'prova',
+      label: 'Preparar a prova',
+      hint: 'O que costuma cair',
+      prompts: [
+        'O que é mais importante para prova?',
+        'O que provavelmente cairia em uma prova?',
+      ],
+    },
+    {
+      id: 'treinar',
+      label: 'Treinar',
+      hint: 'Pedir questões do material',
+      prompts: [
+        'Crie questões sobre este assunto',
+      ],
+    },
   ];
 
   const loadConversations = async () => {
@@ -144,21 +166,37 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ subjectId, documen
             </div>
             <h4 className="text-base font-bold text-slate-200">Converse com seus materiais</h4>
             <p className="mt-1 text-xs text-slate-400">
-              Faça perguntas sobre fórmulas, conceitos, pegadinhas de prova ou peça resumos diretos.
+              Escolha o tipo de pergunta. As sugestões dessa intenção aparecem em seguida.
             </p>
 
-            {/* Quick Prompts */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-6 w-full text-left">
-              {starterSuggestions.map((s, idx) => (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-6 w-full text-left">
+              {suggestionGroups.map((group) => (
                 <button
-                  key={idx}
-                  onClick={() => handleSendMessage(s)}
-                  className="p-3 text-xs text-slate-300 bg-slate-900/80 hover:bg-slate-800/80 border border-slate-800 hover:border-teal-500/40 rounded-xl transition-all text-left cursor-pointer"
+                  key={group.id}
+                  type="button"
+                  aria-pressed={suggestionGroup === group.id}
+                  onClick={() => setSuggestionGroup(suggestionGroup === group.id ? null : group.id)}
+                  className="choice-chip"
                 >
-                  💬 {s}
+                  <span className="block text-sm font-bold">{group.label}</span>
+                  <span className="block text-xs opacity-80">{group.hint}</span>
                 </button>
               ))}
             </div>
+            {suggestionGroup && (
+              <div className="ihc-reveal grid grid-cols-1 gap-2 mt-3 w-full text-left">
+                {suggestionGroups.find((group) => group.id === suggestionGroup)?.prompts.map((prompt) => (
+                  <button
+                    key={prompt}
+                    type="button"
+                    onClick={() => handleSendMessage(prompt)}
+                    className="choice-chip text-sm"
+                  >
+                    {prompt}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
@@ -214,10 +252,11 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ subjectId, documen
                   <div className="flex items-center justify-end gap-2 mt-2 pt-1">
                     <button
                       onClick={() => copyToClipboard(msg.content, msg.id)}
-                      className="p-1 rounded text-slate-400 hover:text-white transition-colors cursor-pointer"
-                      title="Copiar resposta"
+                      className="btn-quiet text-slate-300 hover:text-white hover:bg-slate-800"
+                      title="Copia a resposta para colar nas suas anotações"
                     >
-                      {copiedId === msg.id ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                      {copiedId === msg.id ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                      {copiedId === msg.id ? 'Copiado' : 'Copiar resposta'}
                     </button>
                   </div>
                 )}
@@ -262,17 +301,21 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ subjectId, documen
             onChange={(e) => setInputPrompt(e.target.value)}
             placeholder="Pergunte sobre seus materiais de estudo..."
             disabled={loading}
-            className="flex-1 px-4 py-3 text-sm bg-slate-900 border border-slate-700/80 focus:border-teal-500 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none transition-colors"
+            aria-describedby="chat-help"
+            className="flex-1 min-h-12 px-4 py-3 text-sm bg-slate-900 border border-slate-700/80 focus:border-teal-500 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none transition-colors"
           />
 
           <button
             type="submit"
             disabled={loading || !inputPrompt.trim()}
-            className="flex items-center justify-center w-11 h-11 bg-teal-600 hover:bg-teal-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-lg shadow-teal-500/20 transition-all shrink-0 cursor-pointer"
+            title="Envia a pergunta e espera a resposta com as fontes"
+            className="btn-primary bg-teal-600 hover:bg-teal-500 disabled:opacity-50 disabled:cursor-not-allowed text-white shadow-lg shadow-teal-500/20 shrink-0"
           >
             <Send className="w-4 h-4 text-white" />
+            {loading ? 'Enviando' : 'Enviar'}
           </button>
         </form>
+        <p id="chat-help" className="field-help text-slate-400 px-1">A resposta usa apenas os documentos desta matéria e cita a página ou o slide.</p>
       </div>
 
       {/* Source Citation Preview Modal */}

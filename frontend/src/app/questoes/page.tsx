@@ -7,7 +7,7 @@ import { Navbar } from '@/components/Navbar';
 import { QuestionPractice } from '@/components/QuestionPractice';
 import { StudyDemoBanner } from '@/components/StudyDemoBanner';
 import { demoQuestions } from '@/lib/demo-study';
-import { HelpCircle, Sparkles, Loader2, Filter } from 'lucide-react';
+import { HelpCircle, Loader2 } from 'lucide-react';
 
 export default function QuestoesPage() {
   const [showDemo, setShowDemo] = useState(true);
@@ -17,6 +17,7 @@ export default function QuestoesPage() {
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>('');
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('Misturado');
   const [selectedType, setSelectedType] = useState<string>('misturado');
+  const [filterFocus, setFilterFocus] = useState<'materia' | 'dificuldade' | 'tipo' | null>(null);
   const [loading, setLoading] = useState(true);
 
   const loadData = async () => {
@@ -64,43 +65,61 @@ export default function QuestoesPage() {
               </p>
             </div>
 
-            {/* Filters */}
-            <div className="flex flex-wrap items-center gap-2.5">
-              <select
-                value={selectedSubjectId}
-                disabled={showDemo}
-                onChange={(e) => setSelectedSubjectId(e.target.value)}
-                className="px-3.5 py-2 text-xs bg-slate-900 border border-slate-700 rounded-xl text-slate-200"
-              >
-                <option value="">Todas as matérias</option>
-                {subjects.map((s) => (
-                  <option key={s.id} value={s.id}>{s.name}</option>
-                ))}
-              </select>
-
-              <select
-                value={selectedDifficulty}
-                onChange={(e) => setSelectedDifficulty(e.target.value)}
-                className="px-3.5 py-2 text-xs bg-slate-900 border border-slate-700 rounded-xl text-slate-200"
-              >
-                <option value="Misturado">Todas as dificuldades</option>
-                <option value="Fácil">Fácil</option>
-                <option value="Médio">Médio</option>
-                <option value="Difícil">Difícil</option>
-              </select>
-
-              <select
-                value={selectedType}
-                onChange={(e) => setSelectedType(e.target.value)}
-                className="px-3.5 py-2 text-xs bg-slate-900 border border-slate-700 rounded-xl text-slate-200"
-              >
-                <option value="misturado">Todos os tipos</option>
-                <option value="multipla_escolha">Múltipla Escolha</option>
-                <option value="verdadeiro_falso">Verdadeiro / Falso</option>
-                <option value="discursiva">Discursiva</option>
-              </select>
-            </div>
           </div>
+
+          <section className="p-5 rounded-2xl bg-[#161b22] border border-slate-800 space-y-4" aria-label="Filtros do banco">
+            <div>
+              <h2 className="text-sm font-bold text-slate-100">Filtrar em uma etapa</h2>
+              <p className="text-xs text-slate-400 mt-1">Abra só o critério que você quer mudar. Os outros ficam resumidos abaixo.</p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <button type="button" aria-pressed={filterFocus === 'materia'} disabled={showDemo} title={showDemo ? 'No modo demonstração as questões não vêm de uma matéria sua' : 'Escolher a matéria'} onClick={() => setFilterFocus(filterFocus === 'materia' ? null : 'materia')} className="choice-chip disabled:opacity-50">
+                <span className="block text-sm font-bold">Matéria</span>
+              </button>
+              <button type="button" aria-pressed={filterFocus === 'dificuldade'} onClick={() => setFilterFocus(filterFocus === 'dificuldade' ? null : 'dificuldade')} className="choice-chip">
+                <span className="block text-sm font-bold">Dificuldade</span>
+              </button>
+              <button type="button" aria-pressed={filterFocus === 'tipo'} onClick={() => setFilterFocus(filterFocus === 'tipo' ? null : 'tipo')} className="choice-chip">
+                <span className="block text-sm font-bold">Tipo de questão</span>
+              </button>
+            </div>
+            {filterFocus === 'materia' && (
+              <div className="ihc-reveal flex flex-wrap gap-2">
+                <button type="button" aria-pressed={selectedSubjectId === ''} onClick={() => setSelectedSubjectId('')} className="choice-chip">Todas</button>
+                {subjects.map((subject) => (
+                  <button key={subject.id} type="button" aria-pressed={selectedSubjectId === subject.id} onClick={() => setSelectedSubjectId(subject.id)} className="choice-chip">{subject.name}</button>
+                ))}
+              </div>
+            )}
+            {filterFocus === 'dificuldade' && (
+              <div className="ihc-reveal flex flex-wrap gap-2">
+                {['Misturado', 'Fácil', 'Médio', 'Difícil'].map((level) => (
+                  <button key={level} type="button" aria-pressed={selectedDifficulty === level} onClick={() => setSelectedDifficulty(level)} className="choice-chip">
+                    {level === 'Misturado' ? 'Todas' : level}
+                  </button>
+                ))}
+              </div>
+            )}
+            {filterFocus === 'tipo' && (
+              <div className="ihc-reveal flex flex-wrap gap-2">
+                {[
+                  ['misturado', 'Todos'],
+                  ['multipla_escolha', 'Múltipla escolha'],
+                  ['verdadeiro_falso', 'Verdadeiro ou falso'],
+                  ['discursiva', 'Discursiva'],
+                ].map(([value, label]) => (
+                  <button key={value} type="button" aria-pressed={selectedType === value} onClick={() => setSelectedType(value)} className="choice-chip">{label}</button>
+                ))}
+              </div>
+            )}
+            <p className="text-sm text-slate-300" role="status">
+              Mostrando {selectedSubjectId ? subjects.find((subject) => subject.id === selectedSubjectId)?.name : 'todas as matérias'}
+              {' · '}
+              {selectedDifficulty === 'Misturado' ? 'qualquer dificuldade' : selectedDifficulty.toLowerCase()}
+              {' · '}
+              {selectedType === 'misturado' ? 'qualquer tipo' : selectedType === 'multipla_escolha' ? 'múltipla escolha' : selectedType === 'verdadeiro_falso' ? 'verdadeiro ou falso' : 'discursiva'}.
+            </p>
+          </section>
 
           <StudyDemoBanner active={showDemo} onToggle={() => setShowDemo((current) => !current)} />
           {showDemo ? (
@@ -109,8 +128,9 @@ export default function QuestoesPage() {
               (selectedType === 'misturado' || question.question_type === selectedType)
             )} />
           ) : loading ? (
-            <div className="flex justify-center py-16">
+            <div className="flex flex-col items-center justify-center gap-3 py-16" role="status">
               <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+              <p className="text-sm text-slate-300">Buscando questões com o filtro atual…</p>
             </div>
           ) : (
             <QuestionPractice key="saved" questions={questions} />

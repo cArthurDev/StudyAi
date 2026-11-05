@@ -25,6 +25,7 @@ import {
   Loader2,
   Save
 } from 'lucide-react';
+import { RequiredMark } from '@/components/RequiredField';
 import type { A11yPalette } from '@/context/ThemeContext';
 
 export default function ConfiguracoesPage() {
@@ -33,6 +34,8 @@ export default function ConfiguracoesPage() {
   const [email, setEmail] = useState('');
   const [savingProfile, setSavingProfile] = useState(false);
   const [profileError, setProfileError] = useState<string | null>(null);
+  const [nameError, setNameError] = useState<'vazio' | null>(null);
+  const [emailError, setEmailError] = useState<'vazio' | 'formato' | null>(null);
   const [profileSaved, setProfileSaved] = useState(false);
 
   useEffect(() => {
@@ -45,16 +48,17 @@ export default function ConfiguracoesPage() {
     if (savingProfile || !user) return;
     setProfileError(null);
     setProfileSaved(false);
-    if (!fullName.trim()) {
-      setProfileError('Informe seu nome.');
-      return;
-    }
+    const nextName = !fullName.trim() ? 'vazio' as const : null;
+    const nextEmail = !email.trim() ? 'vazio' as const : email.includes('@') && email.split('@')[1]?.includes('.') ? null : 'formato' as const;
+    setNameError(nextName);
+    setEmailError(nextEmail);
+    if (nextName || nextEmail) return;
     setSavingProfile(true);
     try {
       await updateProfile({ full_name: fullName.trim(), email: email.trim() });
       setProfileSaved(true);
     } catch (error) {
-      setProfileError(error instanceof Error ? error.message : 'N?o foi poss?vel salvar. Tente novamente.');
+      setProfileError(error instanceof Error ? error.message : 'o servidor recusou a gravação do perfil.');
     } finally {
       setSavingProfile(false);
     }
@@ -71,8 +75,12 @@ export default function ConfiguracoesPage() {
     {
       id: 'default',
       title: 'Padrão',
-      description: 'Azul safira, azul claro e cobre, com superfícies neutras',
-      swatches: ['#3459a6', '#8aa9df', '#b86b43', isDarkMode ? '#171717' : '#ffffff'],
+      description: isDarkMode
+        ? 'Azul, verde e vermelho dos slides, sobre fundo azul-marinho'
+        : 'Azul safira, azul claro e cobre, com superfícies neutras',
+      swatches: isDarkMode
+        ? ['#4e80bc', '#60b020', '#d02010', '#0b1c36']
+        : ['#3459a6', '#8aa9df', '#b86b43', '#ffffff'],
       icon: <Palette className="w-5 h-5" />,
     },
     {
@@ -172,28 +180,34 @@ export default function ConfiguracoesPage() {
                 <p className="text-xs text-slate-400">Atualize seu nome e o e-mail usado para entrar.</p>
               </div>
             </div>
-            <form onSubmit={handleSaveProfile} className="space-y-4">
+            <form onSubmit={handleSaveProfile} className="space-y-4" noValidate>
               <fieldset disabled={savingProfile || !user} className="grid grid-cols-1 md:grid-cols-2 gap-4 disabled:opacity-60">
                 <div>
-                  <label htmlFor="profile-name" className="block text-xs font-semibold text-slate-300 mb-1.5">Nome completo</label>
-                  <input id="profile-name" name="name" autoComplete="name" required maxLength={255} value={fullName}
-                    onChange={(event) => { setFullName(event.target.value); setProfileSaved(false); setProfileError(null); }}
-                    className="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-teal-500" />
+                  <label htmlFor="profile-name" className="block text-sm font-semibold text-slate-200 mb-1.5">Nome completo<RequiredMark /></label>
+                  <input id="profile-name" name="name" autoComplete="name" maxLength={255} value={fullName}
+                    aria-invalid={nameError ? true : undefined}
+                    onChange={(event) => { setFullName(event.target.value); setProfileSaved(false); setProfileError(null); setNameError(null); }}
+                    className={`w-full min-h-12 p-3 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-teal-500 ${nameError ? 'field-invalid' : ''}`} />
+                  {nameError && <p className="field-error" role="alert">Preencha o nome.</p>}
                 </div>
                 <div>
-                  <label htmlFor="profile-email" className="block text-xs font-semibold text-slate-300 mb-1.5">E-mail</label>
-                  <input id="profile-email" name="email" type="email" autoComplete="email" required maxLength={255} value={email}
-                    onChange={(event) => { setEmail(event.target.value); setProfileSaved(false); setProfileError(null); }}
-                    className="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-teal-500" />
+                  <label htmlFor="profile-email" className="block text-sm font-semibold text-slate-200 mb-1.5">E-mail<RequiredMark /></label>
+                  <input id="profile-email" name="email" type="email" autoComplete="email" maxLength={255} value={email}
+                    aria-invalid={emailError ? true : undefined}
+                    onChange={(event) => { setEmail(event.target.value); setProfileSaved(false); setProfileError(null); setEmailError(null); }}
+                    placeholder="nome@exemplo.com"
+                    className={`w-full min-h-12 p-3 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-teal-500 ${emailError ? 'field-invalid' : ''}`} />
+                  {emailError === 'vazio' && <p className="field-error" role="alert">Preencha o e-mail.</p>}
+                  {emailError === 'formato' && <p className="field-error" role="alert">Use um e-mail como nome@exemplo.com.</p>}
                 </div>
               </fieldset>
-              {profileError && <p role="alert" className="flex items-center gap-2 text-sm text-rose-400"><AlertCircle className="h-4 w-4 shrink-0" />{profileError}</p>}
+              {profileError && <p className="field-error" role="alert">{profileError}</p>}
               {profileSaved && <p role="status" className="flex items-center gap-2 text-sm text-emerald-400"><CheckCircle2 className="h-4 w-4 shrink-0" />Perfil atualizado.</p>}
               <div className="flex justify-end">
                 <button type="submit" disabled={savingProfile || !user || (fullName.trim() === user.full_name && email.trim() === user.email)}
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                  className="btn-primary bg-teal-600 hover:bg-teal-500 text-white disabled:opacity-50 disabled:cursor-not-allowed">
                   {savingProfile ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-                  {savingProfile ? 'Salvando...' : 'Salvar altera??es'}
+                  {savingProfile ? 'Salvando…' : 'Salvar alterações'}
                 </button>
               </div>
             </form>

@@ -4,7 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { api, StudyPlan, Subject } from '@/lib/api';
 import { Sidebar } from '@/components/Sidebar';
 import { Navbar } from '@/components/Navbar';
-import { CalendarDays, Plus, CheckCircle2, Clock, Sparkles, Loader2, X, Trash2 } from 'lucide-react';
+import Link from 'next/link';
+import { CalendarDays, Plus, CheckCircle2, Clock, Sparkles, Loader2, X, Trash2, AlertCircle } from 'lucide-react';
 
 export default function PlanoEstudosPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -41,6 +42,7 @@ export default function PlanoEstudosPage() {
   const [hoursPerDay, setHoursPerDay] = useState(2.0);
   const [selectedDays, setSelectedDays] = useState<string[]>(['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta']);
   const [creating, setCreating] = useState(false);
+  const [planError, setPlanError] = useState<string | null>(null);
 
   const daysList = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
 
@@ -74,7 +76,12 @@ export default function PlanoEstudosPage() {
   const handleCreatePlan = async (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedDays.length === 0) return;
+    if (subjects.length === 0) {
+      setPlanError('Crie ao menos uma matéria antes de gerar o plano.');
+      return;
+    }
     setCreating(true);
+    setPlanError(null);
 
     try {
       const newPlan = await api.createWeeklyPlan({
@@ -84,7 +91,7 @@ export default function PlanoEstudosPage() {
       setPlans((prev) => [newPlan, ...prev]);
       setShowModal(false);
     } catch (err: any) {
-      alert(err.message || 'Erro ao criar plano.');
+      setPlanError(err.message || 'Não foi possível criar o plano.');
     } finally {
       setCreating(false);
     }
@@ -216,7 +223,7 @@ export default function PlanoEstudosPage() {
             <div className="p-12 text-center bg-[#161b22] border border-slate-800 rounded-3xl">
               <p className="text-slate-400 text-xs">Nenhum plano de estudos ativo.</p>
               <button
-                onClick={() => setShowModal(true)}
+                onClick={() => { setPlanError(null); setShowModal(true); }}
                 className="mt-4 px-5 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 rounded-xl"
               >
                 Gerar Plano Semanal com IA
@@ -277,6 +284,18 @@ export default function PlanoEstudosPage() {
                   })}
                 </div>
               </div>
+
+              {planError && (
+                <div role="alert" className="flex items-start gap-2 rounded-xl border border-rose-300 bg-rose-50 px-3 py-2.5 text-sm text-rose-800">
+                  <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                  <p>
+                    {planError}{' '}
+                    <Link href="/materias" className="font-semibold underline">
+                      Criar uma matéria
+                    </Link>
+                  </p>
+                </div>
+              )}
 
               <div className="flex justify-end gap-3 pt-4 border-t border-slate-800">
                 <button

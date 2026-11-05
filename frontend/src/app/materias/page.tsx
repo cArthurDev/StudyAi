@@ -8,6 +8,7 @@ import { Sidebar } from '@/components/Sidebar';
 import { Navbar } from '@/components/Navbar';
 import { SubjectCard } from '@/components/SubjectCard';
 import { BookOpen, Plus, Sparkles, X, Loader2 } from 'lucide-react';
+import { RequiredMark } from '@/components/RequiredField';
 
 export default function MateriasPage() {
   const { user } = useAuth();
@@ -23,15 +24,18 @@ export default function MateriasPage() {
   const [creating, setCreating] = useState(false);
 
   const colors = [
-    '#0D9488', // Teal
-    '#2563EB', // Blue
-    '#7C3AED', // Violet
-    '#059669', // Emerald
-    '#0891B2', // Cyan
-    '#D97706', // Amber
-    '#DC2626', // Red
-    '#4F46E5', // Indigo
+    { hex: '#0D9488', name: 'Verde-azulado' },
+    { hex: '#2563EB', name: 'Azul' },
+    { hex: '#7C3AED', name: 'Violeta' },
+    { hex: '#059669', name: 'Verde' },
+    { hex: '#0891B2', name: 'Ciano' },
+    { hex: '#D97706', name: 'Âmbar' },
+    { hex: '#DC2626', name: 'Vermelho' },
+    { hex: '#4F46E5', name: 'Índigo' },
   ];
+  const [formStep, setFormStep] = useState(1);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [createdNotice, setCreatedNotice] = useState<string | null>(null);
 
   const loadSubjects = async () => {
     try {
@@ -50,7 +54,16 @@ export default function MateriasPage() {
 
   const handleCreateSubject = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) return;
+    if (!name.trim()) {
+      setFormError('vazio');
+      setFormStep(1);
+      return;
+    }
+    if (formStep === 1) {
+      setFormError(null);
+      setFormStep(2);
+      return;
+    }
     setCreating(true);
 
     try {
@@ -62,10 +75,12 @@ export default function MateriasPage() {
       });
       setSubjects((prev) => [newSub, ...prev]);
       setShowModal(false);
+      setFormStep(1);
       setName('');
       setDescription('');
+      setCreatedNotice(`Matéria “${name.trim()}” criada. Abra o card para enviar um material.`);
     } catch {
-      // ignore
+      setFormError('servidor');
     } finally {
       setCreating(false);
     }
@@ -79,6 +94,12 @@ export default function MateriasPage() {
         <Navbar onMenuClick={() => setSidebarOpen(true)} />
 
         <main className="flex-1 p-4 md:p-8 space-y-8 max-w-7xl mx-auto w-full">
+          {createdNotice && (
+            <div role="status" className="ihc-status">
+              <Sparkles className="w-5 h-5 shrink-0" />
+              <p className="text-sm font-medium">{createdNotice}</p>
+            </div>
+          )}
           {/* Header */}
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
@@ -91,11 +112,11 @@ export default function MateriasPage() {
             </div>
 
             <button
-              onClick={() => setShowModal(true)}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs shadow-lg shadow-teal-500/20 transition-all cursor-pointer"
+              onClick={() => { setShowModal(true); setFormStep(1); setFormError(null); }}
+              className="btn-primary bg-teal-600 hover:bg-teal-500 text-white shadow-lg shadow-teal-500/20"
             >
               <Plus className="w-4 h-4 text-white" />
-              Nova Matéria
+              Nova matéria
             </button>
           </div>
 
@@ -121,8 +142,8 @@ export default function MateriasPage() {
               </p>
 
               <button
-                onClick={() => setShowModal(true)}
-                className="flex items-center gap-2 mt-5 px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs shadow-lg shadow-teal-500/20 transition-all cursor-pointer"
+                onClick={() => { setShowModal(true); setFormStep(1); setFormError(null); }}
+                className="btn-primary mt-5 bg-teal-600 hover:bg-teal-500 text-white shadow-lg shadow-teal-500/20"
               >
                 <Plus className="w-4 h-4 text-white" />
                 Criar Primeira Matéria
@@ -136,73 +157,109 @@ export default function MateriasPage() {
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
           <div className="w-full max-w-md p-6 md:p-8 bg-[#161b22] border border-slate-800 rounded-3xl shadow-2xl space-y-6">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-bold text-slate-100">Criar Nova Matéria</h3>
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <h3 className="text-lg font-bold text-slate-100">Nova matéria</h3>
+                <p className="text-xs text-slate-400">Passo {formStep} de 2. Primeiro o nome, depois a cor.</p>
+              </div>
               <button
+                type="button"
                 onClick={() => setShowModal(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white"
+                className="btn-quiet text-slate-300 hover:text-white hover:bg-slate-800"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
+                Fechar
               </button>
             </div>
 
             <form onSubmit={handleCreateSubject} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">Nome da Matéria</label>
-                <input
-                  type="text"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Ex: Banco de Dados, Programação, História"
-                  className="w-full px-4 py-2.5 text-sm bg-slate-900 border border-slate-800 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:border-teal-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">Descrição (opcional)</label>
-                <textarea
-                  rows={2}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Ex: Modelo Relacional, SQL, Normalização e Transações"
-                  className="w-full px-4 py-2.5 text-sm bg-slate-900 border border-slate-800 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:border-teal-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-2">Cor de Destaque</label>
-                <div className="flex flex-wrap gap-2.5">
-                  {colors.map((c) => (
-                    <button
-                      key={c}
-                      type="button"
-                      onClick={() => setColor(c)}
-                      className={`w-8 h-8 rounded-full transition-transform ${
-                        color === c ? 'scale-125 ring-2 ring-white ring-offset-2 ring-offset-slate-900' : 'hover:scale-110'
-                      }`}
-                      style={{ backgroundColor: c }}
+              {formStep === 1 && (
+                <fieldset className="space-y-4 ihc-reveal">
+                  <legend className="text-sm font-bold text-slate-100">Identidade</legend>
+                  <div>
+                    <label htmlFor="subject-name" className="block text-sm font-semibold text-slate-200 mb-1.5">
+                      Nome da matéria<RequiredMark />
+                    </label>
+                    <input
+                      id="subject-name"
+                      type="text"
+                      value={name}
+                      aria-invalid={formError === 'vazio' || undefined}
+                      onChange={(e) => { setName(e.target.value); setFormError(null); }}
+                      placeholder="Ex.: Banco de Dados"
+                      className={`w-full min-h-12 px-4 py-3 text-sm bg-slate-900 border border-slate-800 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:border-teal-500 ${formError === 'vazio' ? 'field-invalid' : ''}`}
                     />
-                  ))}
-                </div>
-              </div>
+                    {formError === 'vazio' && <p className="field-error" role="alert">Preencha o nome da matéria.</p>}
+                    {formError === 'servidor' && <p className="field-error" role="alert">Não foi possível criar a matéria. Tente de novo.</p>}
+                  </div>
+                  <div>
+                    <label htmlFor="subject-description" className="block text-sm font-semibold text-slate-200 mb-1.5">Descrição, opcional</label>
+                    <textarea
+                      id="subject-description"
+                      rows={2}
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      placeholder="Ex.: SQL, normalização e transações"
+                      className="w-full px-4 py-3 text-sm bg-slate-900 border border-slate-800 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:border-teal-500"
+                    />
+                  </div>
+                </fieldset>
+              )}
+
+              {formStep === 2 && (
+                <fieldset className="space-y-3 ihc-reveal">
+                  <legend className="text-sm font-bold text-slate-100">Cor do card</legend>
+                  <div className="grid grid-cols-4 gap-2">
+                    {colors.map((item) => (
+                      <button
+                        key={item.hex}
+                        type="button"
+                        aria-pressed={color === item.hex}
+                        title={item.name}
+                        onClick={() => setColor(item.hex)}
+                        className={`choice-chip flex flex-col items-center gap-2 py-3 ${color === item.hex ? '' : ''}`}
+                      >
+                        <span className="w-8 h-8 rounded-full" style={{ backgroundColor: item.hex }} />
+                        <span className="text-[11px] font-semibold">{item.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                </fieldset>
+              )}
 
               <div className="flex justify-end gap-3 pt-4 border-t border-slate-800">
                 <button
                   type="button"
-                  onClick={() => setShowModal(false)}
-                  className="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-slate-200 rounded-xl cursor-pointer"
+                  onClick={() => formStep === 1 ? setShowModal(false) : setFormStep(1)}
+                  className="btn-quiet text-slate-300 hover:text-slate-100 hover:bg-slate-800"
                 >
-                  Cancelar
+                  {formStep === 1 ? 'Cancelar' : 'Voltar'}
                 </button>
 
-                <button
-                  type="submit"
-                  disabled={creating || !name.trim()}
-                  className="flex items-center gap-2 px-5 py-2 text-xs font-bold text-white bg-teal-600 hover:bg-teal-500 disabled:opacity-50 rounded-xl shadow-lg shadow-teal-500/20 cursor-pointer"
-                >
-                  {creating ? <Loader2 className="w-3.5 h-3.5 animate-spin text-white" /> : 'Criar Matéria'}
-                </button>
+                {formStep === 1 ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!name.trim()) {
+                        setFormError('vazio');
+                        return;
+                      }
+                      setFormError(null);
+                      setFormStep(2);
+                    }}
+                    className="btn-primary bg-teal-600 hover:bg-teal-500 text-white"
+                  >
+                    Escolher a cor
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    disabled={creating || !name.trim()}
+                    className="btn-primary bg-teal-600 hover:bg-teal-500 disabled:opacity-50 text-white shadow-lg shadow-teal-500/20"
+                  >
+                    {creating ? <Loader2 className="w-4 h-4 animate-spin text-white" /> : 'Criar matéria'}
+                  </button>
+                )}
               </div>
             </form>
           </div>

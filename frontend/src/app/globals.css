@@ -85,39 +85,39 @@ body {
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-/* Dark surfaces — lifted cards on a cool slate, library blue accents */
+/* Dark surfaces from the slide navy (#00007f) and slide blue (#4e80bc). */
 html.dark .bg-\[\#0a0d12\],
 .bg-\[\#0a0d12\] {
-  background-color: #000000;
+  background-color: #0b1c36;
 }
 
 html.dark aside,
 html.dark .bg-\[\#0d1117\],
 .bg-\[\#0d1117\] {
-  background-color: #0d0d0d;
+  background-color: #0e2444;
 }
 
 html.dark header,
 html.dark .bg-\[\#0d1117\]\/80 {
-  background-color: rgba(13, 13, 13, 0.94);
-  border-color: #303030;
+  background-color: rgba(14, 36, 68, 0.94);
+  border-color: #2c568c;
 }
 
 html.dark .bg-\[\#161b22\],
 .bg-\[\#161b22\] {
-  background-color: #171717;
-  border-color: #303030;
+  background-color: #143056;
+  border-color: #2c568c;
 }
 
 html.dark .border-slate-800,
 html.dark .border-slate-800\/80,
 html.dark .border-slate-700 {
-  border-color: #303030;
+  border-color: #2c568c;
 }
 
 html.dark .bg-slate-950 {
-  background-color: #0a0a0a;
-  border-color: #303030;
+  background-color: #0b1c36;
+  border-color: #2c568c;
 }
 
 html.dark .bg-slate-900,
@@ -125,23 +125,23 @@ html.dark .bg-slate-900\/90,
 html.dark .bg-slate-900\/80,
 html.dark .bg-slate-900\/60,
 html.dark .bg-slate-900\/50 {
-  background-color: #121212;
-  border-color: #303030;
+  background-color: #10243f;
+  border-color: #2c568c;
 }
 
 html.dark .bg-slate-800 {
-  background-color: #262626;
+  background-color: #1b3d68;
 }
 
 html.dark .study-hero {
-  background: #171717;
-  border-color: #303030;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  background: #143056;
+  border-color: #4e80bc;
+  box-shadow: 0 8px 24px rgba(0, 23, 64, 0.35);
 }
 
 html.dark .emergency-hero {
-  background: #171717;
-  border-color: rgba(244, 63, 94, 0.4);
+  background: #3a1614;
+  border-color: #d02010;
 }
 
 /* Primary buttons keep white text for contrast on blue */
@@ -310,6 +310,14 @@ html.light select {
   border-color: #cbd5e1 !important;
 }
 
+html.light input.field-invalid,
+html.light textarea.field-invalid,
+html.light input.field-invalid:focus,
+html.light textarea.field-invalid:focus {
+  border-color: #be123c !important;
+  box-shadow: inset 0 0 0 2px #be123c;
+}
+
 html.light input:focus,
 html.light textarea:focus,
 html.light select:focus {
@@ -473,8 +481,8 @@ html.light .upload-dropzone-dragging {
 
 /* Completed sessions retain readable text and a distinct success surface. */
 .study-session-completed {
-  background-color: #12382e;
-  border-color: #3b8065;
+  background-color: #14341a;
+  border-color: #60b020;
 }
 html.light .study-session-completed {
   background-color: #e8f5ed !important;
@@ -487,26 +495,105 @@ html.light .study-session-completed .text-slate-400 {
   accent-color: #28784d;
 }
 
-/* Neutral slate surfaces and text in dark mode; brand blue stays on actions. */
+/* Dark mode uses the slide hues: blue #4e80bc, green #60b020, red #d02010. */
 html.dark {
-  --color-slate-100: #f5f5f5;
-  --color-slate-200: #e5e5e5;
-  --color-slate-300: #d4d4d4;
-  --color-slate-400: #a3a3a3;
-  --color-slate-500: #858585;
-  --color-slate-600: #525252;
-  --color-slate-700: #404040;
-  --color-slate-800: #262626;
-  --color-slate-900: #121212;
-  --color-slate-950: #0a0a0a;
+  --background: #0b1c36;
+  --foreground: #e8f1fb;
+  --card-bg: #143056;
+  --sidebar-bg: #0e2444;
+  --border-color: #2c568c;
+  --palette-primary: #4e80bc;
+  --palette-primary-hover: #6aa0d4;
+  --color-slate-100: #e8f1fb;
+  --color-slate-200: #d0e0f0;
+  --color-slate-300: #b7cce4;
+  --color-slate-400: #8eafd4;
+  --color-slate-500: #6e94bc;
+  --color-slate-600: #3d6294;
+  --color-slate-700: #2a4d7c;
+  --color-slate-800: #1c3a62;
+  --color-slate-900: #122844;
+  --color-slate-950: #0b1c36;
+  --color-teal-300: #99ccff;
+  --color-teal-400: #99ccff;
+  --color-teal-500: #4e80bc;
+  --color-teal-600: #3d6eab;
+  --color-teal-700: #2f5f96;
+  --color-indigo-300: #99ccff;
+  --color-indigo-400: #99ccff;
+  --color-indigo-500: #4e80bc;
+  --color-indigo-600: #3d6eab;
+  --color-indigo-700: #2f5f96;
+  --color-blue-400: #00b7ff;
+  --color-blue-500: #4e80bc;
+  --color-green-400: #8fd15f;
+  --color-green-500: #60b020;
+  --color-green-600: #2e9b22;
+  --color-emerald-300: #8fd15f;
+  --color-emerald-400: #8fd15f;
+  --color-emerald-500: #60b020;
+  --color-emerald-600: #2e9b22;
+  --color-red-400: #f05050;
+  --color-red-500: #d02010;
+  --color-rose-300: #f05050;
+  --color-rose-400: #f05050;
+  --color-rose-500: #d02010;
+  --color-rose-800: #f0c4c0;
+  --color-amber-300: #f05050;
+  --color-amber-400: #f05050;
+  --color-amber-500: #d02010;
+  --color-amber-600: #d02010;
+  --color-orange-400: #f05050;
+  --color-orange-500: #d02010;
+  --color-purple-300: #99ccff;
+  --color-purple-400: #99ccff;
+  --color-purple-500: #4e80bc;
 }
 html.dark .bg-slate-900\/40 {
-  background-color: #121212;
-  border-color: #303030;
+  background-color: #10243f;
+  border-color: #2c568c;
 }
-html.dark ::-webkit-scrollbar-track { background: #000000; }
-html.dark ::-webkit-scrollbar-thumb { background: #404040; }
-html.dark ::-webkit-scrollbar-thumb:hover { background: #525252; }
+html.dark ::-webkit-scrollbar-track { background: #0b1c36; }
+html.dark ::-webkit-scrollbar-thumb { background: #2c568c; }
+html.dark ::-webkit-scrollbar-thumb:hover { background: #4e80bc; }
+html.dark .nav-item[aria-current="page"]::before {
+  background: #4e80bc;
+}
+html.dark .aviso-prova {
+  background-color: #4e80bc !important;
+  border-color: #2f5f96 !important;
+}
+html.dark .choice-chip {
+  background: #143056;
+  border-color: #2c568c;
+  color: #e8f1fb;
+}
+html.dark .choice-chip[aria-pressed="true"] {
+  border-color: #4e80bc;
+  box-shadow: inset 0 0 0 2px #4e80bc;
+}
+html.dark .subject-tab {
+  background: #143056;
+  color: #99ccff;
+  border-color: #2c568c;
+}
+html.dark .subject-tab[aria-pressed="true"] {
+  border-color: #4e80bc;
+  box-shadow: inset 0 -2px 0 #4e80bc;
+}
+html.dark input,
+html.dark textarea,
+html.dark select {
+  background-color: #0e2444;
+  color: #e8f1fb;
+  border-color: #2c568c;
+}
+html.dark input:focus,
+html.dark textarea:focus,
+html.dark select:focus {
+  border-color: #4e80bc;
+  outline-color: #4e80bc;
+}
 
 /* Larger text for low vision */
 html[data-text="large"] {
@@ -1243,4 +1330,331 @@ html[data-a11y="monochrome"] :focus-visible {
   html:not([data-a11y]) {
     --border-color: #ffffff;
   }
+}
+
+/* IHC — Hick (etapas), Fitts (alvos), Gestalt (grupos), ação e signos */
+@keyframes ihc-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ihc-bar {
+  from { transform: scaleY(0.35); opacity: 0; }
+  to { transform: scaleY(1); opacity: 1; }
+}
+
+.ihc-reveal {
+  animation: ihc-in 180ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ihc-reveal,
+  .nav-item[aria-current="page"]::before {
+    animation: none;
+  }
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 36px;
+  padding: 0.4rem 0.85rem;
+  border-radius: 0.7rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.btn-quiet {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 32px;
+  padding: 0.3rem 0.65rem;
+  border-radius: 0.65rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+@media (min-width: 48rem) {
+  .hide-from-md {
+    display: none !important;
+  }
+}
+
+.ihc-cluster {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  margin-top: 0.35rem;
+  padding: 0.15rem;
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+html.light .ihc-cluster {
+  background: #f4f7fb;
+}
+
+.ihc-kicker {
+  padding: 0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.nav-item {
+  position: relative;
+  min-height: 32px;
+}
+
+.nav-item[aria-current="page"]::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 10px;
+  bottom: 10px;
+  width: 3px;
+  border-radius: 999px;
+  background: #456bb7;
+  transform-origin: center;
+  animation: ihc-bar 180ms ease;
+}
+
+.choice-chip {
+  min-height: 36px;
+  padding: 0.45rem 0.7rem;
+  border-radius: 0.9rem;
+  border: 1px solid #303030;
+  background: #171717;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+html.light .choice-chip {
+  background: #ffffff;
+  border-color: #dce2ec;
+  color: #202d45;
+}
+
+.choice-chip[aria-pressed="true"] {
+  border-color: #3459a6;
+  box-shadow: inset 0 0 0 2px #3459a6;
+}
+
+.choice-chip:hover {
+  border-color: #3459a6;
+}
+
+.choice-chip:focus-visible {
+  outline: 2px solid #3459a6;
+  outline-offset: 3px;
+}
+
+.ajuda-banner {
+  background: #d6e6f5;
+  border: 1px solid #4e80bc;
+  border-radius: 0.9rem;
+  padding: 0.85rem 1rem;
+  color: #163a66;
+}
+
+.ajuda-banner p {
+  color: #24507a;
+}
+
+.ajuda-chip {
+  border-left-width: 4px;
+  border-left-color: var(--ajuda-accent);
+  color: var(--ajuda-ink);
+}
+
+.ajuda-chip[aria-pressed="true"] {
+  background: var(--ajuda-wash);
+  border-color: var(--ajuda-accent);
+  box-shadow: inset 0 0 0 2px var(--ajuda-accent);
+  color: var(--ajuda-ink);
+}
+
+.ajuda-card {
+  background: var(--ajuda-wash);
+  border-color: var(--ajuda-accent);
+  border-left-width: 4px;
+  color: #243044;
+}
+
+.ajuda-card h2 a {
+  color: var(--ajuda-ink);
+}
+
+.ajuda-card p {
+  color: #243044;
+}
+
+.ajuda-purpose {
+  color: #1d4e89 !important;
+}
+
+.ajuda-steps {
+  color: #1c7a18 !important;
+}
+
+html.light .ajuda-banner,
+html.light .ajuda-card,
+html.light .ajuda-card p,
+html.light .ajuda-chip,
+html.light .ajuda-chip[aria-pressed="true"] {
+  color: var(--ajuda-ink, #163a66);
+}
+
+html.light .ajuda-banner {
+  background: #d6e6f5 !important;
+  border-color: #4e80bc !important;
+  color: #163a66 !important;
+}
+
+html.light .ajuda-banner p {
+  color: #24507a !important;
+}
+
+html.light .ajuda-card {
+  background: var(--ajuda-wash) !important;
+  border-color: var(--ajuda-accent) !important;
+}
+
+html.light .ajuda-card p {
+  color: #243044 !important;
+}
+
+html.light .ajuda-card h2 a {
+  color: var(--ajuda-ink) !important;
+}
+
+html.dark .ajuda-banner {
+  background: #143056;
+  border-color: #4e80bc;
+  color: #d6e6f5;
+}
+
+html.dark .ajuda-banner p {
+  color: #b7d0ea;
+}
+
+html.dark .ajuda-card {
+  background: color-mix(in srgb, var(--ajuda-accent) 24%, #0e2444);
+  color: #e8f1fb;
+}
+
+html.dark .ajuda-card p,
+html.dark .ajuda-card h2 a {
+  color: #e8f1fb;
+}
+
+html.dark .ajuda-chip {
+  color: #e8f1fb;
+}
+
+html.dark .ajuda-chip[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--ajuda-accent) 32%, #0e2444);
+  color: #e8f1fb;
+}
+
+html.dark .ajuda-purpose {
+  color: #99ccff !important;
+}
+
+html.dark .ajuda-steps {
+  color: #8fd15f !important;
+}
+
+.field-help {
+  margin-top: 0.35rem;
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.req-mark {
+  margin-left: 0.2rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.required-note {
+  margin: 0 0 0.85rem;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.field-invalid,
+.field-invalid:focus {
+  border-color: #be123c !important;
+  box-shadow: inset 0 0 0 2px #be123c;
+  outline-color: #be123c;
+}
+
+html.dark .field-invalid,
+html.dark .field-invalid:focus {
+  border-color: #f05050 !important;
+  box-shadow: inset 0 0 0 2px #f05050;
+}
+
+.field-rupture {
+  margin-top: 0.45rem;
+  padding: 0.7rem 0.8rem;
+  border: 2px solid currentColor;
+  border-radius: 0.75rem;
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.field-error {
+  margin-top: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #be123c;
+}
+
+html.dark .field-error {
+  color: #f05050;
+}
+
+.ihc-status {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.9rem 1rem;
+  border-radius: 0.9rem;
+  border: 1px solid #c7d5ef;
+  background: #e5ecf8;
+  color: #243e6c;
+  animation: ihc-in 180ms ease;
+}
+
+html.dark .ihc-status {
+  background: #143056;
+  border-color: #4e80bc;
+  color: #d6e6f5;
+}
+
+.ihc-status-error {
+  border-color: #fda4af;
+  background: #fff1f2;
+  color: #9f1239;
+}
+
+html.dark .ihc-status-error {
+  background: #3a1614;
+  border-color: #d02010;
+  color: #f8d0cc;
+}
+
+.subject-tab {
+  min-height: 34px;
 }

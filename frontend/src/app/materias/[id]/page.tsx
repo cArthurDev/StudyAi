@@ -31,8 +31,36 @@ import {
   AlarmClock,
   Loader2,
   CheckCircle2,
+  AlertCircle,
   ArrowLeft
 } from 'lucide-react';
+
+const tabGroups = [
+  {
+    id: 'organizar',
+    label: 'Organizar',
+    description: 'Ver a matéria e os arquivos',
+    ids: ['visao_geral', 'materiais'],
+  },
+  {
+    id: 'aprender',
+    label: 'Aprender',
+    description: 'Conversar, resumir e mapear',
+    ids: ['chat', 'resumos', 'mapa_mental'],
+  },
+  {
+    id: 'treinar',
+    label: 'Treinar',
+    description: 'Cartas, questões e simulados',
+    ids: ['flashcards', 'questoes', 'simulados'],
+  },
+];
+
+const summaryFormats = [
+  { id: 'completo', label: 'Completo', hint: 'Texto estruturado para estudar com calma' },
+  { id: 'topicos', label: 'Em tópicos', hint: 'Lista curta para revisar depois' },
+  { id: 'simplificado', label: 'Linguagem simples', hint: 'Explicado como para alguém de 12 anos' },
+];
 
 export default function SubjectDetailPage() {
   const params = useParams();
@@ -41,6 +69,12 @@ export default function SubjectDetailPage() {
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<string>('visao_geral');
+  const [menuGroup, setMenuGroup] = useState('organizar');
+  const [notice, setNotice] = useState<string | null>(null);
+  const [noticeError, setNoticeError] = useState<string | null>(null);
+  const [summaryIntent, setSummaryIntent] = useState<'rapido' | 'estudar' | 'prova' | null>(null);
+  const [questionStep, setQuestionStep] = useState(1);
+  const [pendingDelete, setPendingDelete] = useState<string | null>(null);
   const [subject, setSubject] = useState<Subject | null>(null);
   const [documents, setDocuments] = useState<DocumentItem[]>([]);
   const [summaries, setSummaries] = useState<Summary[]>([]);
@@ -108,25 +142,31 @@ export default function SubjectDetailPage() {
   }, [activeTab]);
 
   const handleDeleteDocument = async (docId: string) => {
-    if (!confirm('Deseja excluir este documento?')) return;
+    setNotice(null);
+    setNoticeError(null);
     try {
       await api.deleteDocument(docId);
+      setPendingDelete(null);
+      setNotice('Documento excluído. A lista foi atualizada.');
       loadData();
     } catch {
-      // ignore
+      setNoticeError('Não foi possível excluir o documento. Tente de novo.');
     }
   };
 
   const handleGenerateSummary = async () => {
     setGeneratingSummary(true);
+    setNotice(null);
+    setNoticeError(null);
     try {
       const newSum = await api.generateSummary({
         subject_id: subjectId,
         summary_type: summaryType
       });
       setSummaries((prev) => [newSum, ...prev]);
+      setNotice('Resumo pronto. Ele aparece logo abaixo, no formato que você escolheu.');
     } catch (err: any) {
-      alert(err.message || 'Erro ao gerar resumo.');
+      setNoticeError(err.message || 'Não foi possível gerar o resumo. Confira se há um material pronto.');
     } finally {
       setGeneratingSummary(false);
     }
@@ -134,6 +174,8 @@ export default function SubjectDetailPage() {
 
   const handleGenerateFlashcards = async () => {
     setGeneratingFlashcards(true);
+    setNotice(null);
+    setNoticeError(null);
     try {
       const newCards = await api.generateFlashcards({
         subject_id: subjectId,
@@ -141,8 +183,9 @@ export default function SubjectDetailPage() {
         difficulty: 'Misturado'
       });
       setFlashcards((prev) => [...newCards, ...prev]);
+      setNotice('10 flashcards criados. Comece a revisão no baralho abaixo.');
     } catch (err: any) {
-      alert(err.message || 'Erro ao gerar flashcards.');
+      setNoticeError(err.message || 'Não foi possível gerar os flashcards.');
     } finally {
       setGeneratingFlashcards(false);
     }
@@ -150,6 +193,8 @@ export default function SubjectDetailPage() {
 
   const handleGenerateQuestions = async () => {
     setGeneratingQuestions(true);
+    setNotice(null);
+    setNoticeError(null);
     try {
       const newQs = await api.generateQuestions({
         subject_id: subjectId,
@@ -158,8 +203,9 @@ export default function SubjectDetailPage() {
         difficulty: questionDifficulty
       });
       setQuestions((prev) => [...newQs, ...prev]);
+      setNotice('Questões geradas. Responda abaixo para ver o gabarito na hora.');
     } catch (err: any) {
-      alert(err.message || 'Erro ao gerar questões.');
+      setNoticeError(err.message || 'Não foi possível gerar as questões.');
     } finally {
       setGeneratingQuestions(false);
     }
@@ -174,9 +220,12 @@ export default function SubjectDetailPage() {
         time_limit_minutes: 20
       });
       setActiveQuiz(quiz);
+      setMenuGroup('treinar');
       setActiveTab('simulados');
+      setNoticeError(null);
+      setNotice('Simulado criado. O cronômetro começa quando você entrar na prova.');
     } catch (err: any) {
-      alert(err.message || 'Falha ao criar simulado.');
+      setNoticeError(err.message || 'Não foi possível criar o simulado.');
     }
   };
 
@@ -191,10 +240,15 @@ export default function SubjectDetailPage() {
     { id: 'mapa_mental', label: 'Mapa Mental', icon: Network },
   ];
 
+  const openGroup = tabGroups.find((group) => group.id === menuGroup) ?? tabGroups[0];
+  const contentTab = openGroup.ids.includes(activeTab) ? activeTab : null;
+  const questionTypeLabel = questionType === 'multipla_escolha' ? 'múltipla escolha' : questionType === 'verdadeiro_falso' ? 'verdadeiro ou falso' : 'discursivas';
+
   if (loading || !subject) {
     return (
-      <div className="flex h-screen items-center justify-center bg-[#0a0d12]">
+      <div className="flex h-screen flex-col items-center justify-center gap-3 bg-[#0a0d12]" role="status">
         <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+        <p className="text-sm text-slate-300">Carregando a matéria e os materiais…</p>
       </div>
     );
   }
@@ -213,9 +267,11 @@ export default function SubjectDetailPage() {
               <div className="flex items-center gap-4">
                 <Link
                   href="/materias"
-                  className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition-colors"
+                  title="Volta para a lista de matérias"
+                  className="btn-quiet rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white transition-colors"
                 >
                   <ArrowLeft className="w-4 h-4" />
+                  Voltar
                 </Link>
 
                 <div
@@ -238,7 +294,8 @@ export default function SubjectDetailPage() {
               <div className="flex items-center gap-3">
                 <Link
                   href={`/prova-amanha?subject_id=${subject.id}`}
-                  className="aviso-prova flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs transition-all"
+                  title="Gera um plano curto só com o que ainda está fraco"
+                  className="aviso-prova btn-primary rounded-xl font-bold transition-all"
                 >
                   <AlarmClock className="w-4 h-4" />
                   Prova Amanhã
@@ -246,29 +303,63 @@ export default function SubjectDetailPage() {
               </div>
             </div>
 
-            {/* Navigation Tabs */}
-            <div className="flex items-center gap-2 mt-8 pt-4 border-t border-slate-800/80 overflow-x-auto pb-1">
-              {tabs.map((t) => {
-                const Icon = t.icon;
-                const isActive = activeTab === t.id;
-                return (
+            <div className="mt-8 pt-4 border-t border-slate-800/80 space-y-3">
+              <p className="text-xs text-slate-400">
+                Primeiro escolha a etapa. As ferramentas dessa etapa aparecem em seguida, para você decidir entre poucas opções.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2" role="tablist" aria-label="Etapas da matéria">
+                {tabGroups.map((group) => (
                   <button
-                    key={t.id}
+                    key={group.id}
                     type="button"
-                    aria-pressed={isActive}
-                    onClick={() => setActiveTab(t.id)}
-                    className="subject-tab flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-xl whitespace-nowrap"
+                    aria-pressed={menuGroup === group.id}
+                    onClick={() => {
+                      setMenuGroup(group.id);
+                      setNotice(null);
+                    }}
+                    className="choice-chip"
                   >
-                    <Icon className="w-4 h-4" />
-                    <span>{t.label}</span>
+                    <span className="block text-sm font-bold">{group.label}</span>
+                    <span className="block text-xs opacity-80">{group.description}</span>
                   </button>
-                );
-              })}
+                ))}
+              </div>
+              <div className="ihc-reveal flex flex-wrap gap-2" role="tablist" aria-label={`Ferramentas de ${openGroup.label}`}>
+                {tabs.filter((tab) => openGroup.ids.includes(tab.id)).map((tab) => {
+                  const Icon = tab.icon;
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      aria-pressed={isActive}
+                      onClick={() => setActiveTab(tab.id)}
+                      className="subject-tab flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl whitespace-nowrap"
+                    >
+                      <Icon className="w-4 h-4" />
+                      <span>{tab.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
           {/* TAB 1: VISÃO GERAL */}
-          {activeTab === 'visao_geral' && (
+          {(notice || noticeError) && (
+            <div role="status" className={noticeError ? 'ihc-status ihc-status-error' : 'ihc-status'}>
+              {noticeError ? <AlertCircle className="w-5 h-5 shrink-0" /> : <CheckCircle2 className="w-5 h-5 shrink-0" />}
+              <p className="text-sm font-medium">{noticeError || notice}</p>
+            </div>
+          )}
+
+          {contentTab === null && (
+            <div className="p-6 rounded-2xl bg-[#161b22] border border-slate-800 text-sm text-slate-300">
+              Escolha uma ferramenta na etapa <strong>{openGroup.label}</strong>. O conteúdo muda só depois desse clique.
+            </div>
+          )}
+
+          {contentTab === 'visao_geral' && (
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="p-5 rounded-2xl bg-[#161b22] border border-slate-800 space-y-1">
@@ -300,7 +391,7 @@ export default function SubjectDetailPage() {
           )}
 
           {/* TAB 2: MATERIAIS */}
-          {activeTab === 'materiais' && (
+          {contentTab === 'materiais' && (
             <div className="space-y-6">
               <UploadDropzone
                 subjectId={subject.id}
@@ -337,12 +428,34 @@ export default function SubjectDetailPage() {
                             {doc.status === 'ready' ? 'Pronto' : doc.status === 'error' ? 'Erro' : `Processando (${doc.progress}%)`}
                           </span>
 
-                          <button
-                            onClick={() => handleDeleteDocument(doc.id)}
-                            className="p-2 text-slate-400 hover:text-rose-400 rounded-lg transition-colors"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                          {pendingDelete === doc.id ? (
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteDocument(doc.id)}
+                                className="btn-quiet bg-rose-600 text-white hover:bg-rose-500"
+                              >
+                                Confirmar exclusão
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setPendingDelete(null)}
+                                className="btn-quiet text-slate-300 hover:bg-slate-800"
+                              >
+                                Cancelar
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              type="button"
+                              title="Remove este arquivo da matéria"
+                              onClick={() => setPendingDelete(doc.id)}
+                              className="btn-quiet text-slate-300 hover:text-rose-400 hover:bg-rose-500/10"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                              Excluir
+                            </button>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -357,44 +470,58 @@ export default function SubjectDetailPage() {
           )}
 
           {/* TAB 3: CHAT RAG */}
-          {activeTab === 'chat' && (
+          {contentTab === 'chat' && (
             <ChatInterface subjectId={subject.id} documents={documents} />
           )}
 
           {/* TAB 4: RESUMOS */}
-          {activeTab === 'resumos' && (
+          {contentTab === 'resumos' && (
             <div className="space-y-6">
               {/* Generator control card */}
               <div className="p-6 bg-[#161b22] border border-slate-800/80 rounded-2xl shadow-xl space-y-4">
-                <div className="flex flex-wrap items-center justify-between gap-4">
-                  <div>
-                    <h3 className="text-base font-bold text-slate-100">Gerador de Resumos com IA</h3>
-                    <p className="text-xs text-slate-400">Escolha o formato ideal para seu momento de estudo</p>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <select
-                      value={summaryType}
-                      onChange={(e) => setSummaryType(e.target.value)}
-                      className="px-3.5 py-2 text-xs bg-slate-900 border border-slate-700 rounded-xl text-slate-200 focus:outline-none focus:border-indigo-500"
-                    >
-                      <option value="rapido">⚡ Resumo Rápido (3 min)</option>
-                      <option value="completo">📖 Resumo Completo</option>
-                      <option value="prova">🎯 Resumo para Prova</option>
-                      <option value="topicos">📌 Resumo em Tópicos</option>
-                      <option value="simplificado">👶 Resumo Simplificado (12 anos)</option>
-                    </select>
-
-                    <button
-                      disabled={generatingSummary || documents.length === 0}
-                      onClick={handleGenerateSummary}
-                      className="flex items-center gap-2 px-5 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 rounded-xl shadow-lg shadow-indigo-600/30"
-                    >
-                      {generatingSummary ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
-                      Gerar Resumo
-                    </button>
-                  </div>
+                <div>
+                  <h3 className="text-base font-bold text-slate-100">Gerador de Resumos com IA</h3>
+                  <p className="text-xs text-slate-400 mt-1">Passo 1: diga o que você precisa agora. O formato só aparece se ainda houver escolha.</p>
                 </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  <button type="button" aria-pressed={summaryIntent === 'rapido'} onClick={() => { setSummaryIntent('rapido'); setSummaryType('rapido'); }} className="choice-chip">
+                    <span className="block text-sm font-bold">Revisar em 3 minutos</span>
+                    <span className="block text-xs opacity-80">Um resumo curto</span>
+                  </button>
+                  <button type="button" aria-pressed={summaryIntent === 'estudar'} onClick={() => setSummaryIntent('estudar')} className="choice-chip">
+                    <span className="block text-sm font-bold">Estudar o conteúdo</span>
+                    <span className="block text-xs opacity-80">Escolhe o formato no passo 2</span>
+                  </button>
+                  <button type="button" aria-pressed={summaryIntent === 'prova'} onClick={() => { setSummaryIntent('prova'); setSummaryType('prova'); }} className="choice-chip">
+                    <span className="block text-sm font-bold">Focar na prova</span>
+                    <span className="block text-xs opacity-80">O que cai e as pegadinhas</span>
+                  </button>
+                </div>
+                {summaryIntent === 'estudar' && (
+                  <div className="ihc-reveal grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    {summaryFormats.map((format) => (
+                      <button key={format.id} type="button" aria-pressed={summaryType === format.id} onClick={() => setSummaryType(format.id)} className="choice-chip">
+                        <span className="block text-sm font-bold">{format.label}</span>
+                        <span className="block text-xs opacity-80">{format.hint}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+                <p className="field-help text-slate-400">
+                  {documents.length === 0
+                    ? 'Envie um material em Organizar antes de gerar. O botão fica disponível quando houver arquivo pronto.'
+                    : summaryIntent
+                    ? 'A IA usa só os documentos desta matéria. O resumo novo aparece logo abaixo.'
+                    : 'Escolha uma intenção para liberar a geração.'}
+                </p>
+                <button
+                  disabled={generatingSummary || documents.length === 0 || !summaryIntent || (summaryIntent === 'estudar' && !summaryFormats.some((format) => format.id === summaryType))}
+                  onClick={handleGenerateSummary}
+                  className="btn-primary bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white shadow-lg shadow-indigo-600/30"
+                >
+                  {generatingSummary ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                  {generatingSummary ? 'Gerando resumo…' : 'Gerar resumo'}
+                </button>
               </div>
 
               {/* Summaries list */}
@@ -418,7 +545,7 @@ export default function SubjectDetailPage() {
           )}
 
           {/* TAB 5: FLASHCARDS */}
-          {activeTab === 'flashcards' && (
+          {contentTab === 'flashcards' && (
             <div className="space-y-6">
               <div className="flex justify-between items-center p-6 bg-[#161b22] border border-slate-800/80 rounded-2xl">
                 <div>
@@ -428,11 +555,12 @@ export default function SubjectDetailPage() {
 
                 <button
                   disabled={generatingFlashcards || documents.length === 0}
+                  title={documents.length === 0 ? 'Envie um material antes de gerar cartas' : 'Cria 10 cartas a partir dos seus arquivos'}
                   onClick={handleGenerateFlashcards}
-                  className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 rounded-xl shadow-lg shadow-indigo-600/20"
+                  className="btn-primary bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white shadow-lg shadow-indigo-600/20"
                 >
-                  {generatingFlashcards ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
-                  Gerar 10 Flashcards com IA
+                  {generatingFlashcards ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                  {generatingFlashcards ? 'Gerando cartas…' : 'Gerar 10 flashcards'}
                 </button>
               </div>
 
@@ -441,58 +569,65 @@ export default function SubjectDetailPage() {
           )}
 
           {/* TAB 6: QUESTÕES */}
-          {activeTab === 'questoes' && (
+          {contentTab === 'questoes' && (
             <div className="space-y-6">
               {/* Question Generator controls */}
               <div className="p-6 bg-[#161b22] border border-slate-800/80 rounded-2xl shadow-xl space-y-4">
-                <div className="flex flex-wrap items-center justify-between gap-4">
-                  <div>
-                    <h3 className="text-base font-bold text-slate-100">Gerar Questões com IA</h3>
-                    <p className="text-xs text-slate-400">Simule questões acadêmicas baseadas rigorosamente nos seus materiais</p>
+                <div>
+                  <h3 className="text-base font-bold text-slate-100">Gerar questões com IA</h3>
+                  <p className="text-xs text-slate-400 mt-1">Uma decisão por vez: tipo, depois nível, depois quantidade.</p>
+                </div>
+                <p className="text-xs font-semibold text-slate-300">Passo {questionStep} de 3</p>
+                {questionStep === 1 && (
+                  <div className="ihc-reveal grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    {[
+                      ['multipla_escolha', 'Múltipla escolha', 'Uma alternativa correta'],
+                      ['verdadeiro_falso', 'Verdadeiro ou falso', 'Julgar uma afirmação'],
+                      ['discursiva', 'Discursiva', 'Responder com suas palavras'],
+                    ].map(([value, label, hint]) => (
+                      <button key={value} type="button" aria-pressed={questionType === value} onClick={() => { setQuestionType(value); setQuestionStep(2); }} className="choice-chip">
+                        <span className="block text-sm font-bold">{label}</span>
+                        <span className="block text-xs opacity-80">{hint}</span>
+                      </button>
+                    ))}
                   </div>
-
-                  <div className="flex flex-wrap items-center gap-3">
-                    <select
-                      value={questionCount}
-                      onChange={(e) => setQuestionCount(Number(e.target.value))}
-                      className="px-3 py-2 text-xs bg-slate-900 border border-slate-700 rounded-xl text-slate-200"
-                    >
-                      <option value={5}>5 questões</option>
-                      <option value={10}>10 questões</option>
-                      <option value={20}>20 questões</option>
-                      <option value={30}>30 questões</option>
-                    </select>
-
-                    <select
-                      value={questionType}
-                      onChange={(e) => setQuestionType(e.target.value)}
-                      className="px-3 py-2 text-xs bg-slate-900 border border-slate-700 rounded-xl text-slate-200"
-                    >
-                      <option value="multipla_escolha">Múltipla Escolha</option>
-                      <option value="verdadeiro_falso">Verdadeiro / Falso</option>
-                      <option value="discursiva">Discursiva</option>
-                    </select>
-
-                    <select
-                      value={questionDifficulty}
-                      onChange={(e) => setQuestionDifficulty(e.target.value)}
-                      className="px-3 py-2 text-xs bg-slate-900 border border-slate-700 rounded-xl text-slate-200"
-                    >
-                      <option value="Fácil">Fácil</option>
-                      <option value="Médio">Médio</option>
-                      <option value="Difícil">Difícil</option>
-                      <option value="Misturado">Misturado</option>
-                    </select>
-
-                    <button
-                      disabled={generatingQuestions || documents.length === 0}
-                      onClick={handleGenerateQuestions}
-                      className="flex items-center gap-2 px-5 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 rounded-xl shadow-lg shadow-indigo-600/30"
-                    >
-                      {generatingQuestions ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
-                      Gerar Questões
+                )}
+                {questionStep === 2 && (
+                  <div className="ihc-reveal grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {['Fácil', 'Médio', 'Difícil', 'Misturado'].map((level) => (
+                      <button key={level} type="button" aria-pressed={questionDifficulty === level} onClick={() => { setQuestionDifficulty(level); setQuestionStep(3); }} className="choice-chip">
+                        <span className="block text-sm font-bold">{level}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {questionStep === 3 && (
+                  <div className="ihc-reveal grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {[5, 10, 20, 30].map((count) => (
+                      <button key={count} type="button" aria-pressed={questionCount === count} onClick={() => setQuestionCount(count)} className="choice-chip">
+                        <span className="block text-sm font-bold">{count} questões</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+                <p className="field-help text-slate-400" role="status">
+                  Você vai gerar {questionCount} questões de {questionTypeLabel}, nível {questionDifficulty.toLowerCase()}.
+                  {documents.length === 0 ? ' Envie um material antes: o botão espera um arquivo pronto.' : ' A correção aparece assim que você responder.'}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {questionStep > 1 && (
+                    <button type="button" onClick={() => setQuestionStep((step) => step - 1)} className="btn-quiet border border-slate-700 text-slate-200">
+                      Voltar um passo
                     </button>
-                  </div>
+                  )}
+                  <button
+                    disabled={generatingQuestions || documents.length === 0 || questionStep < 3}
+                    onClick={handleGenerateQuestions}
+                    className="btn-primary bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white shadow-lg shadow-indigo-600/30"
+                  >
+                    {generatingQuestions ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                    {generatingQuestions ? 'Gerando questões…' : 'Gerar questões'}
+                  </button>
                 </div>
               </div>
 
@@ -501,7 +636,7 @@ export default function SubjectDetailPage() {
           )}
 
           {/* TAB 7: SIMULADOS */}
-          {activeTab === 'simulados' && (
+          {contentTab === 'simulados' && (
             <div className="space-y-6">
               {!activeQuiz ? (
                 <div className="space-y-6">
@@ -513,10 +648,11 @@ export default function SubjectDetailPage() {
 
                     <button
                       onClick={handleStartSimulado}
-                      className="flex items-center gap-2 px-5 py-2.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl shadow-lg shadow-emerald-600/30"
+                      title="Cria uma prova de 10 questões e 20 minutos"
+                      className="btn-primary bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/30"
                     >
                       <Timer className="w-4 h-4" />
-                      Iniciar Novo Simulado (10 questões)
+                      Iniciar simulado de 10 questões
                     </button>
                   </div>
 
@@ -555,10 +691,12 @@ export default function SubjectDetailPage() {
               ) : (
                 <div className="space-y-4">
                   <button
+                    type="button"
                     onClick={() => setActiveQuiz(null)}
-                    className="text-xs text-slate-400 hover:text-white flex items-center gap-1"
+                    className="btn-quiet text-slate-300 hover:text-white hover:bg-slate-800"
                   >
-                    ← Voltar para lista de simulados
+                    <ArrowLeft className="w-4 h-4" />
+                    Voltar para a lista
                   </button>
                   <SimuladoRunner quiz={activeQuiz} onFinish={() => loadData()} />
                 </div>
@@ -567,7 +705,7 @@ export default function SubjectDetailPage() {
           )}
 
           {/* TAB 8: MAPA MENTAL */}
-          {activeTab === 'mapa_mental' && (
+          {contentTab === 'mapa_mental' && (
             <div className="space-y-6">
               {mindmapData ? (
                 <MindMapViewer

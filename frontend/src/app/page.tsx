@@ -90,10 +90,10 @@ export default function DashboardPage() {
       <div className="flex-1 flex flex-col min-w-0">
         <Navbar onMenuClick={() => setSidebarOpen(true)} />
 
-        <main className="flex-1 p-5 md:p-6 space-y-5 max-w-7xl mx-auto w-full">
-          <div className="study-hero flex flex-wrap items-center justify-between gap-4 p-5 md:p-6 rounded-2xl bg-gradient-to-r from-teal-950/50 via-cyan-950/20 to-slate-900/40 border border-teal-500/20 relative overflow-hidden">
-            <div className="relative z-10 space-y-1">
-              <h2 className="text-2xl md:text-3xl font-extrabold text-slate-100 tracking-tight">
+        <main className="flex-1 p-4 space-y-4 max-w-7xl mx-auto w-full">
+          <div className="study-hero flex flex-wrap items-center justify-between gap-3 p-4 rounded-2xl bg-gradient-to-r from-teal-950/50 via-cyan-950/20 to-slate-900/40 border border-teal-500/20 relative overflow-hidden">
+            <div className="relative z-10 space-y-0.5">
+              <h2 className="text-xl font-extrabold text-slate-100 tracking-tight">
                 {getGreeting()}, <span className="bg-gradient-to-r from-teal-300 via-cyan-300 to-sky-300 bg-clip-text text-transparent">{user?.full_name || 'Estudante'}</span>
               </h2>
               <p className="text-sm text-slate-300 max-w-xl">
@@ -106,7 +106,8 @@ export default function DashboardPage() {
             <div className="relative z-10 flex flex-wrap gap-3">
               <Link
                 href="/materias"
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-sm transition-all"
+                title="Abre a lista para criar ou continuar uma matéria"
+                className="btn-primary bg-teal-600 hover:bg-teal-500 text-white"
               >
                 <Plus className="w-4 h-4 text-white" />
                 Nova Matéria
@@ -114,11 +115,11 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="px-4 py-4 rounded-2xl bg-[#161b22] border border-slate-800/80 flex items-center justify-between">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="px-3 py-3 rounded-xl bg-[#161b22] border border-slate-800/80 flex items-center justify-between">
               <div>
                 <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Matérias</span>
-                <div className="text-2xl font-extrabold text-slate-100 tabular-nums">
+                <div className="text-xl font-extrabold text-slate-100 tabular-nums">
                   {dashboard?.total_subjects || 0}
                 </div>
               </div>
@@ -127,10 +128,10 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <div className="px-4 py-4 rounded-2xl bg-[#161b22] border border-slate-800/80 flex items-center justify-between">
+            <div className="px-3 py-3 rounded-xl bg-[#161b22] border border-slate-800/80 flex items-center justify-between">
               <div>
                 <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Horas Estudadas</span>
-                <div className="text-2xl font-extrabold text-slate-100 tabular-nums">
+                <div className="text-xl font-extrabold text-slate-100 tabular-nums">
                   {dashboard?.total_hours_studied || 0}h
                 </div>
               </div>
@@ -139,10 +140,10 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <div className="px-4 py-4 rounded-2xl bg-[#161b22] border border-slate-800/80 flex items-center justify-between">
+            <div className="px-3 py-3 rounded-xl bg-[#161b22] border border-slate-800/80 flex items-center justify-between">
               <div>
                 <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Questões</span>
-                <div className="text-2xl font-extrabold text-slate-100 tabular-nums">
+                <div className="text-xl font-extrabold text-slate-100 tabular-nums">
                   {dashboard?.total_questions_answered || 0}
                 </div>
               </div>
@@ -151,10 +152,10 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <div className="px-4 py-4 rounded-2xl bg-[#161b22] border border-slate-800/80 flex items-center justify-between">
+            <div className="px-3 py-3 rounded-xl bg-[#161b22] border border-slate-800/80 flex items-center justify-between">
               <div>
                 <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Taxa de Acertos</span>
-                <div className="text-2xl font-extrabold text-slate-100 tabular-nums">
+                <div className="text-xl font-extrabold text-slate-100 tabular-nums">
                   {dashboard?.overall_accuracy_percentage || 0}%
                 </div>
               </div>
