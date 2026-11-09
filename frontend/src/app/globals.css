@@ -57,9 +57,9 @@
 :root {
   --background: #000000;
   --foreground: #f5f5f5;
-  --card-bg: #171717;
-  --sidebar-bg: #0d0d0d;
-  --border-color: #303030;
+  --card-bg: #101010;
+  --sidebar-bg: #080808;
+  --border-color: #242424;
 
   --palette-primary: #456bb7;
   --palette-primary-hover: #8aa9df;
@@ -88,36 +88,36 @@ body {
 /* Dark surfaces from the slide navy (#00007f) and slide blue (#4e80bc). */
 html.dark .bg-\[\#0a0d12\],
 .bg-\[\#0a0d12\] {
-  background-color: #0b1c36;
+  background-color: #080b10;
 }
 
 html.dark aside,
 html.dark .bg-\[\#0d1117\],
 .bg-\[\#0d1117\] {
-  background-color: #0e2444;
+  background-color: #0b0f15;
 }
 
 html.dark header,
 html.dark .bg-\[\#0d1117\]\/80 {
-  background-color: rgba(14, 36, 68, 0.94);
-  border-color: #2c568c;
+  background-color: rgba(11, 15, 21, 0.96);
+  border-color: #252c36;
 }
 
 html.dark .bg-\[\#161b22\],
 .bg-\[\#161b22\] {
-  background-color: #143056;
-  border-color: #2c568c;
+  background-color: #111720;
+  border-color: #252c36;
 }
 
 html.dark .border-slate-800,
 html.dark .border-slate-800\/80,
 html.dark .border-slate-700 {
-  border-color: #2c568c;
+  border-color: #252c36;
 }
 
 html.dark .bg-slate-950 {
-  background-color: #0b1c36;
-  border-color: #2c568c;
+  background-color: #080b10;
+  border-color: #252c36;
 }
 
 html.dark .bg-slate-900,
@@ -125,12 +125,12 @@ html.dark .bg-slate-900\/90,
 html.dark .bg-slate-900\/80,
 html.dark .bg-slate-900\/60,
 html.dark .bg-slate-900\/50 {
-  background-color: #10243f;
-  border-color: #2c568c;
+  background-color: #0d121a;
+  border-color: #252c36;
 }
 
 html.dark .bg-slate-800 {
-  background-color: #1b3d68;
+  background-color: #171e28;
 }
 
 html.dark .study-hero {
@@ -484,35 +484,35 @@ html.light .study-session-completed .text-slate-400 {
 
 /* Dark mode uses the slide hues: blue #4e80bc, green #60b020, red #d02010. */
 html.dark {
-  --background: #0b1c36;
-  --foreground: #e8f1fb;
-  --card-bg: #143056;
-  --sidebar-bg: #0e2444;
-  --border-color: #2c568c;
-  --palette-primary: #4e80bc;
-  --palette-primary-hover: #6aa0d4;
-  --color-slate-100: #e8f1fb;
-  --color-slate-200: #d0e0f0;
-  --color-slate-300: #b7cce4;
-  --color-slate-400: #8eafd4;
-  --color-slate-500: #6e94bc;
-  --color-slate-600: #3d6294;
-  --color-slate-700: #2a4d7c;
-  --color-slate-800: #1c3a62;
-  --color-slate-900: #122844;
-  --color-slate-950: #0b1c36;
-  --color-teal-300: #99ccff;
-  --color-teal-400: #99ccff;
-  --color-teal-500: #4e80bc;
-  --color-teal-600: #3d6eab;
-  --color-teal-700: #2f5f96;
-  --color-indigo-300: #99ccff;
-  --color-indigo-400: #99ccff;
-  --color-indigo-500: #4e80bc;
-  --color-indigo-600: #3d6eab;
-  --color-indigo-700: #2f5f96;
+  --background: #080b10;
+  --foreground: #e6e8eb;
+  --card-bg: #111720;
+  --sidebar-bg: #0b0f15;
+  --border-color: #252c36;
+  --palette-primary: #52749b;
+  --palette-primary-hover: #6c8caf;
+  --color-slate-100: #e6e8eb;
+  --color-slate-200: #cbd0d7;
+  --color-slate-300: #aeb6c1;
+  --color-slate-400: #858f9c;
+  --color-slate-500: #657181;
+  --color-slate-600: #475363;
+  --color-slate-700: #343e4b;
+  --color-slate-800: #252d38;
+  --color-slate-900: #171e28;
+  --color-slate-950: #080b10;
+  --color-teal-300: #9ab5d1;
+  --color-teal-400: #829fbd;
+  --color-teal-500: #52749b;
+  --color-teal-600: #466688;
+  --color-teal-700: #3a5878;
+  --color-indigo-300: #9ab5d1;
+  --color-indigo-400: #829fbd;
+  --color-indigo-500: #52749b;
+  --color-indigo-600: #466688;
+  --color-indigo-700: #3a5878;
   --color-blue-400: #00b7ff;
-  --color-blue-500: #4e80bc;
+  --color-blue-500: #52749b;
   --color-green-400: #8fd15f;
   --color-green-500: #60b020;
   --color-green-600: #2e9b22;
@@ -532,9 +532,9 @@ html.dark {
   --color-amber-600: #d02010;
   --color-orange-400: #f05050;
   --color-orange-500: #d02010;
-  --color-purple-300: #99ccff;
-  --color-purple-400: #99ccff;
-  --color-purple-500: #4e80bc;
+  --color-purple-300: #9ab5d1;
+  --color-purple-400: #829fbd;
+  --color-purple-500: #52749b;
 }
 
 /* Biblioteca surfaces follow the selected app theme, regardless of OS preference. */
@@ -559,68 +559,68 @@ html.dark {
 }
 
 html.dark .library-panel {
-  background-color: #10243f;
-  border-color: #2c568c;
+  background-color: #0d121a;
+  border-color: #252c36;
 }
-html.dark .library-heading { color: #e8f1fb; }
-html.dark .library-muted { color: #8eafd4; }
+html.dark .library-heading { color: #e6e8eb; }
+html.dark .library-muted { color: #858f9c; }
 html.dark .library-dropzone {
-  background-color: #0b1c36;
-  border-color: #2c568c;
+  background-color: #080b10;
+  border-color: #252c36;
 }
 html.dark .library-dropzone:hover,
 html.dark .library-dropzone:focus-within {
-  background-color: #122844;
-  border-color: #4e80bc;
+  background-color: #111720;
+  border-color: #52749b;
 }
 html.dark .library-dropzone-dragging {
-  background-color: #143056;
-  border-color: #6aa0d4;
+  background-color: #171e28;
+  border-color: #6c8caf;
 }
 html.dark .bg-slate-900\/40 {
-  background-color: #10243f;
-  border-color: #2c568c;
+  background-color: #0d121a;
+  border-color: #252c36;
 }
-html.dark ::-webkit-scrollbar-track { background: #0b1c36; }
-html.dark ::-webkit-scrollbar-thumb { background: #2c568c; }
-html.dark ::-webkit-scrollbar-thumb:hover { background: #4e80bc; }
+html.dark ::-webkit-scrollbar-track { background: #080b10; }
+html.dark ::-webkit-scrollbar-thumb { background: #252c36; }
+html.dark ::-webkit-scrollbar-thumb:hover { background: #3b4654; }
 html.dark .nav-item[aria-current="page"]::before {
-  background: #4e80bc;
+  background: #52749b;
 }
 html.dark .aviso-prova {
-  background-color: #4e80bc !important;
-  border-color: #2f5f96 !important;
+  background-color: #3a5878 !important;
+  border-color: #52749b !important;
 }
 html.dark .choice-chip {
-  background: #143056;
-  border-color: #2c568c;
-  color: #e8f1fb;
+  background: #111720;
+  border-color: #252c36;
+  color: #e6e8eb;
 }
 html.dark .choice-chip[aria-pressed="true"] {
-  border-color: #4e80bc;
-  box-shadow: inset 0 0 0 2px #4e80bc;
+  border-color: #52749b;
+  box-shadow: inset 0 0 0 2px #52749b;
 }
 html.dark .subject-tab {
-  background: #143056;
-  color: #99ccff;
-  border-color: #2c568c;
+  background: #111720;
+  color: #9ab5d1;
+  border-color: #252c36;
 }
 html.dark .subject-tab[aria-pressed="true"] {
-  border-color: #4e80bc;
-  box-shadow: inset 0 -2px 0 #4e80bc;
+  border-color: #52749b;
+  box-shadow: inset 0 -2px 0 #52749b;
 }
 html.dark input,
 html.dark textarea,
 html.dark select {
-  background-color: #0e2444;
-  color: #e8f1fb;
-  border-color: #2c568c;
+  background-color: #0b0f15;
+  color: #e6e8eb;
+  border-color: #252c36;
 }
 html.dark input:focus,
 html.dark textarea:focus,
 html.dark select:focus {
-  border-color: #4e80bc;
-  outline-color: #4e80bc;
+  border-color: #6c8caf;
+  outline-color: #6c8caf;
 }
 
 /* Larger text for low vision */
