@@ -440,19 +440,6 @@ html.light .hover\:bg-indigo-500:hover {
   background-color: #294984 !important;
 }
 
-/* Upload surface stays white in every interaction state. */
-html.light .upload-dropzone {
-  background-color: #ffffff !important;
-  border-color: #cbd5e1 !important;
-}
-
-html.light .upload-dropzone:hover,
-html.light .upload-dropzone:focus-within,
-html.light .upload-dropzone-dragging {
-  background-color: #ffffff !important;
-  border-color: #3459a6 !important;
-}
-
 /* Subject navigation keeps white tabs with a restrained hover lift. */
 .subject-tab {
   background: #ffffff;
@@ -548,6 +535,47 @@ html.dark {
   --color-purple-300: #99ccff;
   --color-purple-400: #99ccff;
   --color-purple-500: #4e80bc;
+}
+
+/* Biblioteca surfaces follow the selected app theme, regardless of OS preference. */
+.library-panel {
+  background-color: #ffffff;
+  border-color: #dce2ec;
+}
+.library-heading { color: #202d45; }
+.library-muted { color: #607087; }
+.library-dropzone {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+}
+.library-dropzone:hover,
+.library-dropzone:focus-within {
+  background-color: #ffffff;
+  border-color: #3459a6;
+}
+.library-dropzone-dragging {
+  background-color: #f1f5fc;
+  border-color: #3459a6;
+}
+
+html.dark .library-panel {
+  background-color: #10243f;
+  border-color: #2c568c;
+}
+html.dark .library-heading { color: #e8f1fb; }
+html.dark .library-muted { color: #8eafd4; }
+html.dark .library-dropzone {
+  background-color: #0b1c36;
+  border-color: #2c568c;
+}
+html.dark .library-dropzone:hover,
+html.dark .library-dropzone:focus-within {
+  background-color: #122844;
+  border-color: #4e80bc;
+}
+html.dark .library-dropzone-dragging {
+  background-color: #143056;
+  border-color: #6aa0d4;
 }
 html.dark .bg-slate-900\/40 {
   background-color: #10243f;
@@ -928,6 +956,56 @@ html[data-a11y="colorblind"]:is(.light, .dark) :is(
   .h-full.bg-rose-500, .h-full.bg-red-500
 ) {
   background-image: repeating-linear-gradient(135deg, transparent 0 5px, rgba(255,255,255,.5) 5px 7px);
+}
+
+/* Document processing states use the same accessible semantic palette as the rest of the app. */
+.library-status-ready {
+  color: #286344;
+  background: #e8f5ed;
+  border-color: #a3d1b5;
+}
+.library-status-processing {
+  color: #7a4900;
+  background: #fff0ce;
+  border-color: #d8ad60;
+}
+.library-status-error {
+  color: #923e00;
+  background: #ffeadb;
+  border-color: #d89970;
+}
+html.dark .library-status-ready {
+  color: #8fd15f;
+  background: #17331f;
+  border-color: #397143;
+}
+html.dark .library-status-processing {
+  color: #f5c76b;
+  background: #35290d;
+  border-color: #80611d;
+}
+html.dark .library-status-error {
+  color: #ffb17a;
+  background: #382315;
+  border-color: #8b542e;
+}
+html[data-a11y="colorblind"].light .library-status-ready,
+html[data-a11y="colorblind"].dark .library-status-ready {
+  color: var(--cv-success-text);
+  background: var(--cv-success-soft);
+  border-color: var(--cv-success-border);
+}
+html[data-a11y="colorblind"].light .library-status-processing,
+html[data-a11y="colorblind"].dark .library-status-processing {
+  color: var(--cv-warning-text);
+  background: var(--cv-warning-soft);
+  border-color: var(--cv-warning-border);
+}
+html[data-a11y="colorblind"].light .library-status-error,
+html[data-a11y="colorblind"].dark .library-status-error {
+  color: var(--cv-error-text);
+  background: var(--cv-error-soft);
+  border-color: var(--cv-error-border);
 }
 
 html[data-a11y="colorblind"]:is(.light, .dark) :is(

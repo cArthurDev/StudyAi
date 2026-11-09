@@ -124,10 +124,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           <div className="flex items-center gap-2 px-3 py-2.5 border-b border-slate-800/80">
             <Link href="/" onClick={closeIfNarrow} className="flex items-center gap-3 min-w-0 flex-1 group">
               <div className="min-w-0">
-                <Image src={isDarkMode ? logoBranca : logoPreta} alt="Study AI" className="h-auto w-32" />
-                <p className="text-[11px] text-slate-400 font-medium truncate">
-                  Estudos com IA local
-                </p>
+                <Image src={isDarkMode ? logoBranca : logoPreta} alt="Study AI" className="h-auto w-40" />
               </div>
             </Link>
             {onClose && (
@@ -136,10 +133,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 type="button"
                 aria-label="Fechar menu"
                 title="Fecha o menu e volta ao conteúdo"
-                className="btn-quiet shrink-0 text-slate-300 hover:text-slate-100 hover:bg-slate-800"
+                className={`btn-quiet shrink-0 h-8 w-8 rounded-full p-0 flex items-center justify-center border ${isDarkMode ? 'border-slate-500 text-white hover:text-white hover:border-slate-300 hover:bg-slate-800' : 'border-slate-400 text-slate-700 hover:text-slate-950 hover:border-slate-600 hover:bg-slate-100'}`}
               >
                 <X className="w-4 h-4" />
-                Fechar
               </button>
             )}
           </div>

@@ -147,29 +147,9 @@ export default function ConfiguracoesPage() {
               </p>
             </div>
 
-            {/* Quick Toggle Button */}
-            <button
-              onClick={toggleTheme}
-              className="self-start sm:self-auto flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-[#161b22] hover:bg-slate-800 border border-slate-800 text-slate-200 text-xs font-semibold transition-all shadow-md cursor-pointer group"
-            >
-              {isDarkMode ? (
-                <>
-                  <div className="p-1 rounded-lg bg-teal-500/15 text-teal-400 group-hover:scale-110 transition-transform">
-                    <Sun className="w-4 h-4 text-teal-400" />
-                  </div>
-                  <span>Mudar para Modo Claro</span>
-                </>
-              ) : (
-                <>
-                  <div className="p-1 rounded-lg bg-teal-500/15 text-teal-700 group-hover:scale-110 transition-transform">
-                    <Moon className="w-4 h-4 text-teal-700" />
-                  </div>
-                  <span>Mudar para Modo Escuro</span>
-                </>
-              )}
-            </button>
           </div>
 
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 items-stretch">
           <section aria-labelledby="profile-heading" className="p-6 md:p-8 bg-[#161b22] border border-slate-800/80 rounded-3xl shadow-xl space-y-6">
             <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
               <div className="p-2.5 rounded-xl bg-teal-500/15 text-teal-400 border border-teal-500/30">
@@ -306,6 +286,7 @@ export default function ConfiguracoesPage() {
                 </div>
               </button>
             </div>
+          </div>
           </div>
 
           <div className="p-6 md:p-8 bg-[#161b22] border border-slate-800/80 rounded-3xl shadow-xl space-y-6">

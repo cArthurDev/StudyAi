@@ -20,9 +20,9 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               try {
-                localStorage.setItem('studymind-theme', 'light');
-                document.documentElement.classList.remove('dark');
-                document.documentElement.classList.add('light');
+                const savedTheme = localStorage.getItem('studymind-theme') === 'dark' ? 'dark' : 'light';
+                document.documentElement.classList.remove('light', 'dark');
+                document.documentElement.classList.add(savedTheme);
                 const a11y = localStorage.getItem('studymind-a11y');
                 if (a11y === 'colorblind' || a11y === 'high-contrast' || a11y === 'monochrome') {
                   document.documentElement.setAttribute('data-a11y', a11y);

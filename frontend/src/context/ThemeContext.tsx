@@ -53,9 +53,9 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   useEffect(() => {
     try {
-      setThemeState('light');
-      applyTheme('light');
-      localStorage.setItem('studymind-theme', 'light');
+      const savedTheme: Theme = localStorage.getItem('studymind-theme') === 'dark' ? 'dark' : 'light';
+      setThemeState(savedTheme);
+      applyTheme(savedTheme);
 
       const savedPalette = localStorage.getItem('studymind-a11y') as A11yPalette | null;
       const palette: A11yPalette =

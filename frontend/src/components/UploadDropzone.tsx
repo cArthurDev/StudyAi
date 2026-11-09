@@ -1,196 +1,199 @@
-'use client';
+﻿'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { api, DocumentItem } from '@/lib/api';
-import { UploadCloud, FileText, CheckCircle2, AlertCircle, Loader2, Sparkles, X } from 'lucide-react';
+import { AlertCircle, FileText, FileUp, UploadCloud, X } from 'lucide-react';
 
 interface UploadDropzoneProps {
   subjectId: string;
   onSuccess?: (doc: DocumentItem) => void;
 }
 
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 export const UploadDropzone: React.FC<UploadDropzoneProps> = ({ subjectId, onSuccess }) => {
   const [isDragging, setIsDragging] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
-  const [statusMessage, setStatusMessage] = useState<string>('');
-  const [progress, setProgress] = useState<number>(0);
+  const [statusMessages, setStatusMessages] = useState<string[]>([]);
+  const [progressValues, setProgressValues] = useState<number[]>([]);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
+  const addFiles = (selectedFiles: File[]) => {
+    if (!selectedFiles.length) return;
+    const allowed = ['.pdf', '.pptx', '.txt'];
+    const validFiles = selectedFiles.filter((file) =>
+      allowed.includes(file.name.substring(file.name.lastIndexOf('.')).toLowerCase())
+    );
+    const rejected = selectedFiles.length - validFiles.length;
+    setError(rejected ? `${rejected} arquivo(s) ignorado(s). Envie somente PDF, PPTX ou TXT.` : null);
+    if (validFiles.length) setFiles((current) => [...current, ...validFiles]);
   };
 
-  const handleDragLeave = () => {
+  const handleDrop = (event: React.DragEvent) => {
+    event.preventDefault();
     setIsDragging(false);
+    addFiles(Array.from(event.dataTransfer.files));
   };
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFileSelected(e.dataTransfer.files[0]);
-    }
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) addFiles(Array.from(event.target.files));
+    event.target.value = '';
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      handleFileSelected(e.target.files[0]);
-    }
-  };
-
-  const handleFileSelected = (selectedFile: File) => {
-    const validExtensions = ['.pdf', '.pptx', '.txt'];
-    const ext = selectedFile.name.substring(selectedFile.name.lastIndexOf('.')).toLowerCase();
-    if (!validExtensions.includes(ext)) {
-      setError('Formato não suportado. Por favor, envie arquivos PDF, PPTX ou TXT.');
-      return;
-    }
+  const removeFile = (index: number) => {
+    if (uploading) return;
+    setFiles((current) => current.filter((_, fileIndex) => fileIndex !== index));
     setError(null);
-    setFile(selectedFile);
   };
 
   const startUpload = async () => {
-    if (!file || !subjectId) return;
-
+    if (!files.length || !subjectId || uploading) return;
+    const queued = [...files];
+    const messages = queued.map(() => 'Na fila');
+    const progresses = queued.map(() => 0);
+    const failedFiles: string[] = [];
+    const successfulDocs: DocumentItem[] = [];
     setUploading(true);
     setError(null);
-    setProgress(20);
-    setStatusMessage('Enviando arquivo para o servidor...');
+    setStatusMessages(messages);
+    setProgressValues(progresses);
 
-    try {
-      const formData = new FormData();
-      formData.append('subject_id', subjectId);
-      formData.append('file', file);
+    const updateMessage = (index: number, message: string) => {
+      messages[index] = message;
+      setStatusMessages([...messages]);
+    };
+    const updateProgress = (index: number, value: number) => {
+      progresses[index] = value;
+      setProgressValues([...progresses]);
+    };
 
-      const doc = await api.uploadDocument(formData);
-      setProgress(35);
-      setStatusMessage('Extraindo texto do documento...');
+    for (const [index, file] of queued.entries()) {
+      try {
+        updateMessage(index, 'Enviando arquivo...');
+        updateProgress(index, 10);
+        const formData = new FormData();
+        formData.append('subject_id', subjectId);
+        formData.append('file', file);
+        const doc = await api.uploadDocument(formData);
+        onSuccess?.(doc);
+        updateProgress(index, 30);
+        updateMessage(index, 'Processando documento...');
 
-      // Poll document status
-      const pollInterval = setInterval(async () => {
-        try {
-          const statusRes = await api.getDocumentStatus(doc.id);
-          setProgress(statusRes.progress);
-
-          if (statusRes.status === 'extracting') {
-            setStatusMessage('Extraindo texto e estrutura...');
-          } else if (statusRes.status === 'analyzing') {
-            setStatusMessage('Analisando conceitos com qwen3:8b...');
-          } else if (statusRes.status === 'indexing') {
-            setStatusMessage('Gerando embeddings e índice vetorial...');
-          } else if (statusRes.status === 'ready') {
-            clearInterval(pollInterval);
-            setProgress(100);
-            setStatusMessage('Documento processado e pronto para estudo!');
-            setTimeout(() => {
-              setUploading(false);
-              setFile(null);
-              onSuccess?.(doc);
-            }, 1000);
-          } else if (statusRes.status === 'error') {
-            clearInterval(pollInterval);
-            setUploading(false);
-            setError(statusRes.error_message || 'Erro durante o processamento do documento.');
+        while (true) {
+          await sleep(1500);
+          const status = await api.getDocumentStatus(doc.id);
+          updateProgress(index, status.progress);
+          if (status.status === 'extracting') updateMessage(index, 'Extraindo texto...');
+          else if (status.status === 'analyzing') updateMessage(index, 'Analisando conteúdo...');
+          else if (status.status === 'indexing') updateMessage(index, 'Indexando conteúdo...');
+          else if (status.status === 'ready') {
+            updateProgress(index, 100);
+            updateMessage(index, 'Pronto para estudo');
+            successfulDocs.push(doc);
+            break;
+          } else if (status.status === 'error') {
+            updateMessage(index, status.error_message || 'Falha ao processar.');
+            failedFiles.push(file.name);
+            break;
           }
-        } catch {
-          // ignore transient polling errors
         }
-      }, 1500);
-
-    } catch (err: any) {
-      setUploading(false);
-      setError(err.message || 'Falha ao enviar arquivo.');
+      } catch (uploadError) {
+        updateMessage(index, uploadError instanceof Error ? uploadError.message : 'Falha ao enviar arquivo.');
+        failedFiles.push(file.name);
+      }
     }
+
+    setUploading(false);
+    setFiles([]);
+    if (failedFiles.length) setError(`${successfulDocs.length} enviado(s), ${failedFiles.length} com erro: ${failedFiles.join(', ')}`);
   };
 
   return (
     <div className="w-full">
       <div
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
+        role="button"
+        tabIndex={uploading ? -1 : 0}
+        aria-label="Selecionar ou soltar arquivos PDF, PPTX ou TXT"
+        aria-busy={uploading}
+        onKeyDown={(event) => {
+          if ((event.key === 'Enter' || event.key === ' ') && !uploading) {
+            event.preventDefault();
+            fileInputRef.current?.click();
+          }
+        }}
+        onDragOver={(event) => { event.preventDefault(); setIsDragging(true); }}
+        onDragLeave={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setIsDragging(false);
+        }}
         onDrop={handleDrop}
         onClick={() => !uploading && fileInputRef.current?.click()}
-        className={`upload-dropzone relative flex flex-col items-center justify-center p-8 border-2 border-dashed rounded-2xl cursor-pointer transition-colors ${
+        className={`library-dropzone relative flex min-h-48 flex-col items-center justify-center rounded-2xl border border-dashed p-6 text-center outline-none transition-all duration-200 ease-out focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:min-h-56 sm:p-8 ${
           isDragging
-            ? 'upload-dropzone-dragging border-indigo-500 bg-white'
-            : 'border-slate-800 bg-white hover:border-slate-700'
-        }`}
+            ? 'upload-dropzone-dragging scale-[1.01] border-teal-500 bg-teal-50 shadow-lg shadow-teal-500/10'
+            : 'border-slate-300 bg-slate-50 hover:border-teal-500 hover:bg-white dark:border-slate-600 dark:bg-[#0d1522] dark:hover:border-slate-400 dark:hover:bg-[#111d2d]'
+        } ${uploading ? 'cursor-wait' : 'cursor-pointer'}`}
       >
         <input
           ref={fileInputRef}
           type="file"
           accept=".pdf,.pptx,.txt"
+          multiple
+          onClick={(event) => event.stopPropagation()}
           onChange={handleFileChange}
           disabled={uploading}
           className="hidden"
         />
 
-        <div className="flex items-center justify-center w-14 h-14 mb-4 rounded-2xl bg-teal-500/15 text-teal-400 border border-teal-500/30 shadow-lg shadow-teal-500/10">
-          <UploadCloud className="w-7 h-7" />
+        <div className={`mb-4 flex h-12 w-12 items-center justify-center rounded-2xl border border-teal-500/20 bg-teal-500/10 text-teal-700 transition-transform duration-200 dark:text-teal-300 ${isDragging ? 'scale-110 animate-bounce' : ''}`}>
+          {isDragging ? <FileUp className="h-5 w-5" /> : <UploadCloud className="h-5 w-5" />}
         </div>
 
-        <h3 className="text-base font-semibold text-slate-200 text-center">
-          Arraste seus materiais aqui ou <span className="text-teal-400 underline">procure no computador</span>
+        <h3 className="text-sm font-semibold text-slate-500 sm:text-base dark:text-slate-400">
+          {isDragging ? <span className="text-teal-700 dark:text-teal-300">Solte os arquivos para anexar</span> : <>Arraste seus materiais aqui ou <span className="text-teal-700 underline underline-offset-4 dark:text-teal-300">procure no computador</span></>}
         </h3>
-        <p className="mt-1 text-xs text-slate-400 text-center">
-          Suporte completo para PDF (PyMuPDF), PowerPoint PPTX e TXT (até 50MB)
+        <p className="mt-2 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+          {isDragging ? 'Os arquivos serão adicionados à matéria selecionada' : 'PDF, PowerPoint (PPTX) ou texto (TXT) · até 50 MB por arquivo'}
         </p>
 
-        {file && !uploading && (
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="flex items-center justify-between w-full max-w-md mt-5 p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 shadow-md"
-          >
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-teal-500/15 text-teal-400">
-                <FileText className="w-5 h-5" />
+        {files.length > 0 && !uploading && (
+          <div onClick={(event) => event.stopPropagation()} className="mt-5 w-full max-w-2xl space-y-2 text-left">
+            {files.map((file, index) => (
+              <div key={`${file.name}-${file.lastModified}-${index}`} className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-900">
+                <FileText className="h-5 w-5 shrink-0 text-teal-600 dark:text-teal-300" />
+                <span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-800 dark:text-slate-200">{file.name}</span>
+                <span className="shrink-0 text-xs text-slate-500">{(file.size / 1024 / 1024).toFixed(2)} MB</span>
+                <button type="button" aria-label={`Remover ${file.name} da fila`} onClick={() => removeFile(index)} className="rounded-lg p-1.5 text-slate-500 hover:bg-rose-500/10 hover:text-rose-500">
+                  <X className="h-4 w-4" />
+                </button>
               </div>
-              <div className="flex flex-col text-left">
-                <span className="text-sm font-medium text-slate-200 truncate max-w-[200px]">{file.name}</span>
-                <span className="text-xs text-slate-400">{(file.size / 1024 / 1024).toFixed(2)} MB</span>
-              </div>
-            </div>
-
-            <button
-              onClick={startUpload}
-              title="Envia o arquivo e mostra o progresso da extração"
-              className="btn-primary text-white bg-teal-600 rounded-lg hover:bg-teal-500 shadow-md shadow-teal-500/20"
-            >
-              <UploadCloud className="w-4 h-4 text-white" />
-              Iniciar Processamento
+            ))}
+            <button type="button" onClick={startUpload} className="btn-primary mt-2 rounded-lg bg-teal-600 text-white hover:bg-teal-500">
+              <UploadCloud className="h-4 w-4" /> Enviar {files.length} {files.length === 1 ? 'arquivo' : 'arquivos'}
             </button>
           </div>
         )}
 
-        {/* Progress bar */}
         {uploading && (
-          <div className="w-full max-w-md mt-6 space-y-2">
-            <div className="flex items-center justify-between text-xs text-slate-300">
-              <span className="flex items-center gap-2 font-medium">
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-teal-400" />
-                {statusMessage}
-              </span>
-              <span className="text-xs font-bold font-mono text-teal-400">{progress}%</span>
-            </div>
-
-            <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-teal-700 to-teal-400 transition-all duration-500 rounded-full"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
+          <div className="mt-5 w-full max-w-2xl space-y-3 text-left" aria-live="polite">
+            {files.map((file, index) => (
+              <div key={`${file.name}-${file.lastModified}-${index}`} className="rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-900">
+                <div className="flex items-center justify-between gap-3 text-xs">
+                  <span className="truncate font-medium text-slate-800 dark:text-slate-200">{file.name}</span>
+                  <span className="shrink-0 text-slate-500">{statusMessages[index]}</span>
+                </div>
+                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+                  <div className="h-full rounded-full bg-teal-600 transition-all duration-300" style={{ width: `${progressValues[index] || 0}%` }} />
+                </div>
+              </div>
+            ))}
           </div>
         )}
 
         {error && (
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="flex items-center gap-2 mt-4 px-3.5 py-2 text-xs text-rose-300 bg-rose-500/10 border border-rose-500/30 rounded-lg"
-          >
-            <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+          <div onClick={(event) => event.stopPropagation()} className="mt-4 flex items-start gap-2 rounded-lg border border-rose-500/30 bg-rose-500/10 px-3.5 py-2 text-left text-xs text-rose-700 dark:text-rose-300">
+            <AlertCircle className="h-4 w-4 shrink-0" />
             <span>{error}</span>
           </div>
         )}
